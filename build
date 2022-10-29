@@ -1,0 +1,15 @@
+#!/bin/sh
+export JAVA_HOME="/usr/lib/jvm/jdk-15"
+export PATH=$JAVA_HOME/bin:$PATH
+
+export MAVEN_HOME="/opt/apache-maven-3.8.6"
+export PATH=$MAVEN_HOME/bin:$PATH
+
+export M2_HOME="/opt/apache-maven-3.8.6"
+export PATH=$M2_HOME/bin:$PATH
+
+java -version
+mvn -version
+
+mvn clean
+mvn install
