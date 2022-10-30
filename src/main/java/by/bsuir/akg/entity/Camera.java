@@ -8,7 +8,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.util.List;
 
 public class Camera {
-    private Vector position = new Vector(3.0, 3.0, 1.0);
+    private Vector position = new Vector(3.0, 3.0, 3.0);
     private Vector target = new Vector(0.0, 0.0, 0.0);
     private Vector up = new Vector(0.0, 1.0, 0.0);
     private Double fow = Math.PI / 3f;
@@ -108,6 +108,61 @@ public class Camera {
 
     private RealMatrix divide(Vector vector, double w) {
         return new Array2DRowRealMatrix(new double[][]{{vector.getX() / w}, {vector.getY() / w}, {vector.getZ() / w}, {vector.getW() / w}});
+    }
+
+    public void rotateY( double angle) {
+        Degree degree = new Degree(angle);
+        RealMatrix matrix = new Array2DRowRealMatrix(new double[][]{
+                {Math.cos(degree.toRadian()), 0, Math.sin(degree.toRadian()), 0},
+                {0, 1, 0, 0},
+                {-Math.sin(degree.toRadian()), 0, Math.cos(degree.toRadian()), 0},
+                {0, 0, 0, 1}});
+        RealMatrix multiply = matrix.multiply(new Array2DRowRealMatrix(new double[][]{{position.getX()}, {position.getY()}, {position.getZ()}, {position.getW()}}));
+        position = new Vector(multiply.getData()[0][0], multiply.getData()[1][0], multiply.getData()[2][0]);
+    }
+
+    public void rotateX(double angle) {
+        Degree degree = new Degree(angle);
+        Array2DRowRealMatrix matrix = new Array2DRowRealMatrix(new double[][]{
+                {1, 0, 0, 0},
+                {0, Math.cos(degree.toRadian()), -Math.sin(degree.toRadian()), 0},
+                {0, Math.sin(degree.toRadian()), Math.cos(degree.toRadian()), 0},
+                {0, 0, 0, 1}});
+        RealMatrix multiply = matrix.multiply(new Array2DRowRealMatrix(new double[][]{{position.getX()}, {position.getY()}, {position.getZ()}, {position.getW()}}));
+        position = new Vector(multiply.getData()[0][0], multiply.getData()[1][0], multiply.getData()[2][0]);
+    }
+
+    public void rotateZ(double angle) {
+        Degree degree = new Degree(angle);
+        Array2DRowRealMatrix matrix = new Array2DRowRealMatrix(new double[][]{
+                {Math.cos(degree.toRadian()), -Math.sin(degree.toRadian()), 0, 0},
+                {Math.sin(degree.toRadian()), Math.cos(degree.toRadian()), 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1}});
+        RealMatrix multiply = matrix.multiply(new Array2DRowRealMatrix(new double[][]{{position.getX()}, {position.getY()}, {position.getZ()}, {position.getW()}}));
+        position = new Vector(multiply.getData()[0][0], multiply.getData()[1][0], multiply.getData()[2][0]);
+    }
+
+    public void transform(double diff) {
+        double radius = Math.sqrt(Math.pow(position.getX(),2) + Math.pow(position.getY(),2) + Math.pow(position.getZ(),2));
+        int signA = sign(position.getX()) * sign(position.getY());
+        double oldA = (position.getZ() == 0f) ? 0f : signA * Math.atan(Math.sqrt(Math.pow(position.getX(),2) + Math.pow(position.getY(),2)) / position.getZ());
+        double oldB =(position.getX() == 0f) ? 0f : Math.atan(position.getY() / position.getX());
+        position = new Vector(
+               (radius + diff) * Math.sin(oldA) * Math.cos(oldB),
+                (radius + diff) *  Math.sin(oldA) *  Math.sin(oldB),
+                (radius + diff) * Math.cos(oldA)
+        );
+    }
+
+    private int sign(double coord) {
+        if(coord == 0) {
+            return 0;
+        } else if(coord > 0) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
 }

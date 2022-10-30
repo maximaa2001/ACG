@@ -8,16 +8,18 @@ import java.util.ResourceBundle;
 
 import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Model;
+import by.bsuir.akg.handler.EventHandler;
 import by.bsuir.akg.service.ConvertService;
 import by.bsuir.akg.util.ImagePanel;
 import by.bsuir.akg.util.Parser;
 import javafx.embed.swing.SwingNode;
-import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -46,10 +48,6 @@ public class RenderController {
 //        Parser parser = new Parser();
 //        model = parser.readObject();
 //        instance.changeModelCoordinate(model, 0,0,0);
-        Game game = new Game();
-        game.create();
-
-        // drawLine(10, 20, 50, 20, 255,255,255);
     }
 
     public void renderPane() {
@@ -66,31 +64,12 @@ public class RenderController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                switch (keyEvent.getCode()) {
-                    case Q -> {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("form.fxml"));
-                        try {
-                            Parent root = loader.load();
-                            Scene scene = new Scene(root);
-                            Stage stage1 = new Stage();
-                            stage1.setScene(scene);
-                            stage1.show();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-            }
-        });
-        pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                System.out.println("aaa");
-            }
-        });
+        Game game = Game.getGame(stage);
+        try {
+            game.create();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public BufferedImage getBufferedImage() {
