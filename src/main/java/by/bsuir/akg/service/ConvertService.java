@@ -52,22 +52,22 @@ public class ConvertService {
             double[][] data = windowMatrix.getData();
             newVectors.add(new Vector(data[0][0], data[1][0], data[2][0]));
         }
-        model.setVerts(newVectors);
-        render(model);
+      //  model.setVerts(newVectors);
+        render(model, newVectors);
     }
 
-    private void render(Model model) {
+    private void render(Model model, List<Vector> newVectors) {
         renderController.getBufferedImage().getGraphics().clearRect(0, 0, Const.WIDTH, Const.HEIGHT);
         for (List<Integer> list : model.getFaces()) {
             for (int i = 0; i < list.size(); i++) {
                 Vector startPoint = null;
                 Vector endPoint = null;
                 if ((i + 1) < list.size()) {
-                    startPoint = model.getVerts().get(list.get(i) - 1);
-                    endPoint = model.getVerts().get(list.get(i + 1) - 1);
+                    startPoint =newVectors.get(list.get(i) - 1);
+                    endPoint =newVectors.get(list.get(i + 1) - 1);
                 } else {
-                    startPoint = model.getVerts().get(list.get(i) - 1);
-                    endPoint = model.getVerts().get(list.get(0) - 1);
+                    startPoint = newVectors.get(list.get(i) - 1);
+                    endPoint = newVectors.get(list.get(0) - 1);
                 }
                 if (startPoint.getX() >= 0 && startPoint.getX() <= Const.WIDTH && startPoint.getY() >= 0 && startPoint.getY() <= Const.HEIGHT
                         && endPoint.getX() >= 0 && endPoint.getX() <= Const.WIDTH && endPoint.getY() >= 0 && endPoint.getY() <= Const.HEIGHT) {
@@ -77,6 +77,29 @@ public class ConvertService {
             }
         }
 
+    }
+
+    public void render(List<List<Vector>> newVectors) {
+        renderController.getBufferedImage().getGraphics().clearRect(0, 0, Const.WIDTH, Const.HEIGHT);
+        for(List<Vector> list : newVectors) {
+            for (int i = 0; i < list.size(); i++) {
+                Vector startPoint = null;
+                Vector endPoint = null;
+                if ((i + 1) < list.size()) {
+                    startPoint =list.get(i);
+                    endPoint =list.get(i + 1);
+                } else {
+                    startPoint = list.get(i);
+                    endPoint = list.get(0);
+                }
+                if (startPoint.getX() >= 0 && startPoint.getX() <= Const.WIDTH && startPoint.getY() >= 0 && startPoint.getY() <= Const.HEIGHT
+                        && endPoint.getX() >= 0 && endPoint.getX() <= Const.WIDTH && endPoint.getY() >= 0 && endPoint.getY() <= Const.HEIGHT) {
+                    drawLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY(), 255, 255, 255);
+                    renderController.getPanel().repaint();
+                }
+            }
+
+        }
     }
 
     private void drawPixel(int x, int y, int red, int green, int blue) {

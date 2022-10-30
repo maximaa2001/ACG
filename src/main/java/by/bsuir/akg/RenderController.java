@@ -18,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -42,9 +43,11 @@ public class RenderController {
     void initialize() throws IOException {
         renderPane();
         ConvertService instance = ConvertService.getInstance(this);
-        Parser parser = new Parser();
-        model = parser.readObject();
-        instance.changeModelCoordinate(model, 0,0,0);
+//        Parser parser = new Parser();
+//        model = parser.readObject();
+//        instance.changeModelCoordinate(model, 0,0,0);
+        Game game = new Game();
+        game.create();
 
         // drawLine(10, 20, 50, 20, 255,255,255);
     }
@@ -80,6 +83,12 @@ public class RenderController {
                         }
                     }
                 }
+            }
+        });
+        pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                System.out.println("aaa");
             }
         });
     }
