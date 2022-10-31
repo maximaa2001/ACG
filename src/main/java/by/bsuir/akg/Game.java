@@ -32,7 +32,7 @@ public class Game {
         EventHandler.init(stage, camera);
         Model model = parser.readObject();
         modelService = new ModelService(model, camera);
-        modelService.render();
+        render();
     }
 
     public void render() {
