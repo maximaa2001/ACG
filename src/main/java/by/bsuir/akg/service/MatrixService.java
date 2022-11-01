@@ -5,6 +5,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 
+@Deprecated
 public class MatrixService {
     private static final double DEFAULT_W = 1;
     private static final double WIDTH = Const.WIDTH;
