@@ -5,8 +5,6 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 
-import java.util.List;
-
 public class Camera {
     private Vector position = new Vector(3.0, 3.0, 3.0);
     private Vector target = new Vector(0.0, 0.0, 0.0);
@@ -31,14 +29,15 @@ public class Camera {
 
     public Vector transformToScreenVector(Vector worldVector) {
         RealMatrix fullMatrix = projectionMatrix.multiply(viewMatrix);
-       // Array2DRowRealMatrix array2DRowRealMatrix = new Array2DRowRealMatrix(new double[][]{{worldVector.getX()}, {worldVector.getY()}, {worldVector.getZ()}, {worldVector.getW()}});
+        // Array2DRowRealMatrix array2DRowRealMatrix = new Array2DRowRealMatrix(new double[][]{{worldVector.getX()}, {worldVector.getY()}, {worldVector.getZ()}, {worldVector.getW()}});
         Vector newbie = test(worldVector, fullMatrix);
         RealMatrix divide = divide(newbie, newbie.getW());
-        return test(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]),windowMatrix);
+        return test(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]), windowMatrix);
     }
+
     private Vector test(Vector vector, RealMatrix matrix) {
-        double[] res = new double[]{0,0,0,0};
-        double[] asList = new double[]{vector.getX(),vector.getY(),vector.getZ(),vector.getW()};
+        double[] res = new double[]{0, 0, 0, 0};
+        double[] asList = new double[]{vector.getX(), vector.getY(), vector.getZ(), vector.getW()};
         for (int row = 0; row <= 3; row++) {
             for (int column = 0; column <= 3; column++) {
                 res[row] += matrix.getData()[row][column] * asList[column];
@@ -60,10 +59,10 @@ public class Camera {
     }
 
     private RealMatrix createProjectionMatrix() {
-        double aspect = (double)Const.HEIGHT / Const.WIDTH;
+        double aspect = (double) Const.HEIGHT / Const.WIDTH;
         return new Array2DRowRealMatrix(new double[][]{
-                {1/(aspect * Math.tan(fow / 2)), 0, 0, 0},
-                {0, 1/Math.tan(fow/2), 0, 0},
+                {1 / (aspect * Math.tan(fow / 2)), 0, 0, 0},
+                {0, 1 / Math.tan(fow / 2), 0, 0},
                 {0, 0, far / (near - far), near * far / (near - far)},
                 {0, 0, -1, 0}});
     }
@@ -110,7 +109,7 @@ public class Camera {
         return new Array2DRowRealMatrix(new double[][]{{vector.getX() / w}, {vector.getY() / w}, {vector.getZ() / w}, {vector.getW() / w}});
     }
 
-    public void rotateY( double angle) {
+    public void rotateY(double angle) {
         Degree degree = new Degree(angle);
         RealMatrix matrix = new Array2DRowRealMatrix(new double[][]{
                 {Math.cos(degree.toRadian()), 0, Math.sin(degree.toRadian()), 0},
@@ -144,21 +143,21 @@ public class Camera {
     }
 
     public void transform(double diff) {
-        double radius = Math.sqrt(Math.pow(position.getX(),2) + Math.pow(position.getY(),2) + Math.pow(position.getZ(),2));
+        double radius = Math.sqrt(Math.pow(position.getX(), 2) + Math.pow(position.getY(), 2) + Math.pow(position.getZ(), 2));
         int signA = sign(position.getX()) * sign(position.getY());
-        double oldA = (position.getZ() == 0f) ? 0f : signA * Math.atan(Math.sqrt(Math.pow(position.getX(),2) + Math.pow(position.getY(),2)) / position.getZ());
-        double oldB =(position.getX() == 0f) ? 0f : Math.atan(position.getY() / position.getX());
+        double oldA = (position.getZ() == 0f) ? 0f : signA * Math.atan(Math.sqrt(Math.pow(position.getX(), 2) + Math.pow(position.getY(), 2)) / position.getZ());
+        double oldB = (position.getX() == 0f) ? 0f : Math.atan(position.getY() / position.getX());
         position = new Vector(
-               (radius + diff) * Math.sin(oldA) * Math.cos(oldB),
-                (radius + diff) *  Math.sin(oldA) *  Math.sin(oldB),
+                (radius + diff) * Math.sin(oldA) * Math.cos(oldB),
+                (radius + diff) * Math.sin(oldA) * Math.sin(oldB),
                 (radius + diff) * Math.cos(oldA)
         );
     }
 
     private int sign(double coord) {
-        if(coord == 0) {
+        if (coord == 0) {
             return 0;
-        } else if(coord > 0) {
+        } else if (coord > 0) {
             return 1;
         } else {
             return -1;
