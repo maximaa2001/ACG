@@ -2,13 +2,8 @@ package by.bsuir.akg.handler;
 
 import by.bsuir.akg.Game;
 import by.bsuir.akg.entity.Camera;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class EventHandler {
 
@@ -44,11 +39,11 @@ public class EventHandler {
                         game.render();
                     }
                     case EQUALS -> {
-                        camera.transform(-200);
+                        camera.transform(-2);
                         game.render();
                     }
                     case MINUS -> {
-                        camera.transform(200);
+                        camera.transform(2);
                         game.render();
                     }
                 }

@@ -24,13 +24,16 @@ public class DrawService {
         int L = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
         double currentX = x1;
         double currentY = y1;
+        double dx = (x2 - x1) / (double) L;
+        double dy = (y2 - y1) / (double) L;
         for (int i = 0; i < L; i++) {
             if (currentX < 0 || currentX >= Const.WIDTH || currentY < 0 || currentY >= Const.HEIGHT) {
                 break;
             }
             drawPixel((int) Math.floor(currentX), (int) Math.floor(currentY), 255, 255, 255);
-            currentX += (x2 - x1) / (double) L;
-            currentY += (y2 - y1) / (double) L;
+            currentX += dx;
+            currentY += dy;
+
         }
 
     }

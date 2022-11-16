@@ -6,10 +6,10 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 
 public class Camera {
-    private Vector position = new Vector(3.0, 3.0, 3.0);
+    private Vector position = new Vector(0.0, 0.0, 10.0);
     private Vector target = new Vector(0.0, 0.0, 0.0);
     private Vector up = new Vector(0.0, 1.0, 0.0);
-    private Double fow = Math.PI / 3f;
+    private Double fow = Math.PI / 4f;
 
     private Double near = 0.1;
     private Double far = 100.0;
@@ -29,6 +29,11 @@ public class Camera {
         Vector newbie = multMatrixVector(worldVector, fullMatrix);
         RealMatrix divide = divide(newbie, newbie.getW());
         return multMatrixVector(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]), windowMatrix);
+//        Vector vector = multMatrixVector(worldVector, viewMatrix);
+//        Vector vector1 = multMatrixVector(vector, projectionMatrix);
+//        RealMatrix divide = divide(vector, vector1.getW());
+//        Vector vector2 = new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]);
+//        return multMatrixVector(vector2, windowMatrix);
     }
 
     private Vector multMatrixVector(Vector vector, RealMatrix matrix) {
@@ -54,7 +59,7 @@ public class Camera {
     }
 
     private RealMatrix createProjectionMatrix() {
-        double aspect = (double) Const.HEIGHT / Const.WIDTH;
+        double aspect = (double) Const.WIDTH / Const.HEIGHT;
         return new Array2DRowRealMatrix(new double[][]{
                 {1 / (aspect * Math.tan(fow / 2)), 0, 0, 0},
                 {0, 1 / Math.tan(fow / 2), 0, 0},
