@@ -18,24 +18,20 @@ public class Camera {
     private RealMatrix projectionMatrix = createProjectionMatrix();
     private RealMatrix windowMatrix = createWindowMatrix();
 
-    private RealMatrix resultMatrix = viewMatrix.multiply(projectionMatrix).multiply(windowMatrix);
-
     public void updateScreenMatrix() {
         viewMatrix = createViewMatrix();
         projectionMatrix = createProjectionMatrix();
         windowMatrix = createWindowMatrix();
-        resultMatrix = viewMatrix.multiply(projectionMatrix).multiply(windowMatrix);
     }
 
     public Vector transformToScreenVector(Vector worldVector) {
         RealMatrix fullMatrix = projectionMatrix.multiply(viewMatrix);
-        // Array2DRowRealMatrix array2DRowRealMatrix = new Array2DRowRealMatrix(new double[][]{{worldVector.getX()}, {worldVector.getY()}, {worldVector.getZ()}, {worldVector.getW()}});
-        Vector newbie = test(worldVector, fullMatrix);
+        Vector newbie = multMatrixVector(worldVector, fullMatrix);
         RealMatrix divide = divide(newbie, newbie.getW());
-        return test(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]), windowMatrix);
+        return multMatrixVector(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]), windowMatrix);
     }
 
-    private Vector test(Vector vector, RealMatrix matrix) {
+    private Vector multMatrixVector(Vector vector, RealMatrix matrix) {
         double[] res = new double[]{0, 0, 0, 0};
         double[] asList = new double[]{vector.getX(), vector.getY(), vector.getZ(), vector.getW()};
         for (int row = 0; row <= 3; row++) {
@@ -49,7 +45,6 @@ public class Camera {
     private RealMatrix createViewMatrix() {
         Vector ZAxis = normalize(minus(position, target));
         Vector XAxis = normalize(vectMult(up, ZAxis));
-//        double[] YAxis = UP;
         Vector YAxis = vectMult(ZAxis, XAxis);
         return new Array2DRowRealMatrix(new double[][]{
                 {XAxis.getX(), XAxis.getY(), XAxis.getZ(), -(new ArrayRealVector(toDouble(XAxis)).dotProduct(new ArrayRealVector(toDouble(position))))},
@@ -98,11 +93,6 @@ public class Camera {
 
     private double[] toDouble(Vector vector) {
         return new double[]{vector.getX(), vector.getY(), vector.getZ()};
-    }
-
-    private RealMatrix divide(RealMatrix realMatrix, double w) {
-        double[][] data = realMatrix.getData();
-        return new Array2DRowRealMatrix(new double[][]{{data[0][0] / w}, {data[1][0] / w}, {data[2][0] / w}, {data[3][0] / w}});
     }
 
     private RealMatrix divide(Vector vector, double w) {

@@ -26,7 +26,6 @@ public class DrawService {
         double currentY = y1;
         for (int i = 0; i < L; i++) {
             if (currentX < 0 || currentX >= Const.WIDTH || currentY < 0 || currentY >= Const.HEIGHT) {
-                System.out.println();
                 break;
             }
             drawPixel((int) Math.floor(currentX), (int) Math.floor(currentY), 255, 255, 255);

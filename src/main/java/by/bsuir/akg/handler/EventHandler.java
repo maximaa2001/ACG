@@ -20,36 +20,35 @@ public class EventHandler {
             public void handle(KeyEvent keyEvent) {
                 switch (keyEvent.getCode()) {
                     case D -> {
-                        camera.rotateY(5);
-                        Game game = Game.getGame(null);
+                        camera.rotateY(20);
                         game.render();
                     }
                     case A -> {
-                        camera.rotateY(-5);
+                        camera.rotateY(-20);
                         game.render();
                     }
                     case W -> {
-                        camera.rotateX(5);
+                        camera.rotateX(20);
                         game.render();
                     }
                     case S -> {
-                        camera.rotateX(-5);
+                        camera.rotateX(-20);
                         game.render();
                     }
                     case Q -> {
-                        camera.rotateZ(5);
+                        camera.rotateZ(20);
                         game.render();
                     }
                     case E -> {
-                        camera.rotateZ(-5);
+                        camera.rotateZ(-20);
                         game.render();
                     }
                     case EQUALS -> {
-                        camera.transform(-1);
+                        camera.transform(-200);
                         game.render();
                     }
                     case MINUS -> {
-                        camera.transform(1);
+                        camera.transform(200);
                         game.render();
                     }
                 }

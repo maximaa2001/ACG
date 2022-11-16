@@ -41,7 +41,6 @@ public class ModelService {
                     endPoint = list.get(0);
                 }
                 drawService.drawDda(startPoint.getX().intValue(), startPoint.getY().intValue(), endPoint.getX().intValue(), endPoint.getY().intValue());
-
             }
         }
         drawService.repaint();
