@@ -20,19 +20,24 @@ public class ModelService {
 
     public void render() {
         camera.updateScreenMatrix();
+        List<Double> intens = new ArrayList<>();
         List<List<Vector>> newTriangles = new ArrayList<>();
         List<List<Vector>> triangles = model.getFaces();
         for (List<Vector> list : triangles) {
             Vector normal = findNormal(list);
-            double angle = angle(camera.getPosition(), normal);
-            if(angle < 90) {
+            Vector position = camera.getPosition();
+            if (scalarMult(position, normal) > 0) {
+                double intensity = scalarMult(new Vector(position.getX() * (-1), position.getY() * (-1), position.getZ() * (-1)), normal);
                 List<Vector> collect = list.stream().map(camera::transformToScreenVector).collect(Collectors.toList());
                 newTriangles.add(collect);
+                intens.add(intensity);
             }
         }
         DrawService drawService = DrawService.getInstance(null);
         drawService.clear();
-        newTriangles.forEach(drawService::drawTriangle);
+        for (int i = 0; i < newTriangles.size(); i++) {
+            drawService.drawTriangle(newTriangles.get(i), intens.get(i));
+        }
         drawService.repaint();
     }
 
@@ -41,25 +46,23 @@ public class ModelService {
         Vector p2 = triangle.get(1);
         Vector p3 = triangle.get(2);
 
-        double a = p1.getX() - p2.getX();
-        double b = p1.getY() - p2.getY();
-        double c = p1.getZ() - p2.getZ();
+        double x1 = p1.getX() - p2.getX();
+        double y1 = p1.getY() - p2.getY();
+        double z1 = p1.getZ() - p2.getZ();
 
-        Vector v1 = new Vector(a, b, c);
+        Vector v1 = new Vector(x1, y1, z1);
 
-        double d = p2.getX() - p3.getX();
-        double e = p2.getY() - p3.getY();
-        double f = p2.getZ() - p3.getZ();
+        double x2 = p2.getX() - p3.getX();
+        double y2 = p2.getY() - p3.getY();
+        double z2 = p2.getZ() - p3.getZ();
 
-        Vector v2 = new Vector(d, e, f);
+        Vector v2 = new Vector(x2, y2, z2);
 
-        double wrki = Math.sqrt(sqr(v1.getY() * v2.getZ() - v1.getZ() * v2.getY()) + sqr(v1.getZ() * v2.getX() - v1.getX() * v2.getZ()) + sqr(v1.getX() * v2.getY() - v1.getY() * v2.getX()));
-        double g = (v1.getY() * v2.getZ() - v1.getZ() * v2.getY()) / wrki;
-        double h = (v1.getZ() * v2.getX() - v1.getX() * v2.getZ()) / wrki;
-        double i = (v1.getX() * v2.getY() - v1.getY() * v2.getX()) / wrki;
+        double x3 = (v1.getY() * v2.getZ() - v1.getZ() * v2.getY());
+        double y3 = (v1.getZ() * v2.getX() - v1.getX() * v2.getZ());
+        double z3 = (v1.getX() * v2.getY() - v1.getY() * v2.getX());
 
-        return new Vector(g, h, i);
-
+        return new Vector(x3, y3, z3);
     }
 
     private static double sqr(double x) {
@@ -70,6 +73,10 @@ public class ModelService {
         double ab = vector1.getX() * vector2.getX() + vector1.getY() * vector2.getY() + vector1.getZ() * vector2.getZ();
         double a = Math.sqrt(sqr(vector1.getX()) + sqr(vector1.getY()) + sqr(vector1.getZ()));
         double b = Math.sqrt(sqr(vector2.getX()) + sqr(vector2.getY()) + sqr(vector2.getZ()));
-        return Math.toDegrees(Math.acos(ab/(a * b)));
+        return Math.toDegrees(Math.acos(ab / (a * b)));
+    }
+
+    private static double scalarMult(Vector vector1, Vector vector2) {
+        return vector1.getX() * vector2.getX() + vector1.getY() * vector2.getY() + vector1.getZ() * vector2.getZ();
     }
 }
