@@ -159,4 +159,8 @@ public class Camera {
         }
     }
 
+    public Vector getPosition() {
+        return position;
+    }
+
 }
