@@ -3,12 +3,14 @@ package by.bsuir.akg.util;
 import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Model;
 import by.bsuir.akg.entity.Vector;
+import org.apache.commons.math3.geometry.spherical.twod.Vertex;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Parser {
     private List<Vector> verts = new ArrayList<>();
@@ -42,6 +44,26 @@ public class Parser {
                 faces.add(polygon);
             }
         }
-        return new Model(verts, norms, faces);
+        List<List<Vector>> triangles = new ArrayList<>();
+        faces.forEach(polygon -> {
+            List<Vector> collect = polygon.stream()
+                    .map(numberOfVertex -> verts.get(numberOfVertex - 1))
+                    .collect(Collectors.toList());
+            List<List<Vector>> triangles1 = getTriangles(collect);
+            triangles.addAll(triangles1);
+        });
+        return new Model(verts, norms, triangles);
+    }
+
+    private List<List<Vector>> getTriangles(List<Vector> polygon) {
+        List<List<Vector>> triangles = new ArrayList<>();
+        if(polygon.size() == 3) {
+            triangles.add(polygon);
+        } else {
+            for (int i = 1; i < polygon.size() - 1; i++) {
+                triangles.add(List.of(polygon.get(0), polygon.get(i), polygon.get(i + 1)));
+            }
+        }
+        return triangles;
     }
 }

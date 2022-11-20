@@ -2,6 +2,9 @@ package by.bsuir.akg.service;
 
 import by.bsuir.akg.RenderController;
 import by.bsuir.akg.constant.Const;
+import by.bsuir.akg.entity.Vector;
+
+import java.util.List;
 
 public class DrawService {
     private static DrawService instance;
@@ -18,6 +21,15 @@ public class DrawService {
             instance = new DrawService();
         }
         return instance;
+    }
+
+    public void drawTriangle(List<Vector> triangle) {
+        Vector p1 = triangle.get(0);
+        Vector p2 = triangle.get(1);
+        Vector p3 = triangle.get(2);
+        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue());
+        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue());
+        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue());
     }
 
     public void drawDda(int x1, int y1, int x2, int y2) {

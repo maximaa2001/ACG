@@ -20,29 +20,31 @@ public class ModelService {
 
     public void render() {
         camera.updateScreenMatrix();
-        List<List<Vector>> newVectors = new ArrayList<>();
-        List<List<Integer>> faces = model.getFaces();
-        List<Vector> verts = model.getVerts();
-        for (List<Integer> list : faces) {
-            List<Vector> collect = list.stream().map(index -> verts.get(index - 1)).map(vert -> camera.transformToScreenVector(vert)).collect(Collectors.toList());
-            newVectors.add(collect);
+        List<List<Vector>> newTriangles = new ArrayList<>();
+        List<List<Vector>> triangles = model.getFaces();
+       // List<Vector> verts = model.getVerts();
+        for (List<Vector> list : triangles) {
+            List<Vector> collect = list.stream().map(vert -> camera.transformToScreenVector(vert)).collect(Collectors.toList());
+            newTriangles.add(collect);
         }
         DrawService drawService = DrawService.getInstance(null);
         drawService.clear();
-        for (List<Vector> list : newVectors) {
-            for (int i = 0; i < list.size(); i++) {
-                Vector startPoint = null;
-                Vector endPoint = null;
-                if ((i + 1) < list.size()) {
-                    startPoint = list.get(i);
-                    endPoint = list.get(i + 1);
-                } else {
-                    startPoint = list.get(i);
-                    endPoint = list.get(0);
-                }
-                drawService.drawDda(startPoint.getX().intValue(), startPoint.getY().intValue(), endPoint.getX().intValue(), endPoint.getY().intValue());
-            }
-        }
+        newTriangles.forEach(drawService::drawTriangle);
+
+//        for (List<Vector> list : newVectors) {
+//            for (int i = 0; i < list.size(); i++) {
+//                Vector startPoint = null;
+//                Vector endPoint = null;
+//                if ((i + 1) < list.size()) {
+//                    startPoint = list.get(i);
+//                    endPoint = list.get(i + 1);
+//                } else {
+//                    startPoint = list.get(i);
+//                    endPoint = list.get(0);
+//                }
+//                drawService.drawDda(startPoint.getX().intValue(), startPoint.getY().intValue(), endPoint.getX().intValue(), endPoint.getY().intValue());
+//            }
+//        }
         drawService.repaint();
     }
 }
