@@ -4,7 +4,7 @@ import by.bsuir.akg.RenderController;
 import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Vector;
 
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.List;
 
 public class DrawService {
@@ -24,14 +24,14 @@ public class DrawService {
         return instance;
     }
 
-    public void drawTriangle(List<Vector> triangle, Double intens) {
+    public void drawTriangle(List<Vector> triangle, float intens) {
         Vector p1 = triangle.get(0);
         Vector p2 = triangle.get(1);
         Vector p3 = triangle.get(2);
 //        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue());
 //        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue());
 //        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue());
-        fillTriangle(p1, p2, p3, intens.intValue());
+        fillTriangle(p1, p2, p3, intens);
     }
 
     public void drawDda(int x1, int y1, int x2, int y2) {
@@ -58,12 +58,13 @@ public class DrawService {
         renderController.getPanel().repaint();
     }
 
-    private void drawPixel(int x, int y, int red, int green, int blue) {
-        int rgb = (red << 16 | green << 8 | blue);
-        renderController.getBufferedImage().setRGB(x, y, rgb);
+    private void drawPixel(int x, int y, float red, float green, float blue) {
+        //int rgb = (red << 16 | green << 8 | blue);
+        Color color = new Color((float) (red * 0.5 + 0.5), (float) (green * 0.5 + 0.5), (float) (blue * 0.5 + 0.5));
+        renderController.getBufferedImage().setRGB(x, y, color.getRGB());
     }
 
-    private void fillTriangle(Vector p1, Vector p2, Vector p3, Integer intens) {
+    private void fillTriangle(Vector p1, Vector p2, Vector p3, float intens) {
         Vector topLeft = topLeft(p1, p2, p3);
         Vector bottomRight = bottomRight(p1, p2, p3);
         if (topLeft.getX() < 0 || topLeft.getY() < 0 || bottomRight.getX() < 0 || bottomRight.getY() < 0

@@ -20,14 +20,14 @@ public class ModelService {
 
     public void render() {
         camera.updateScreenMatrix();
-        List<Double> intens = new ArrayList<>();
+        List<Float> intens = new ArrayList<>();
         List<List<Vector>> newTriangles = new ArrayList<>();
         List<List<Vector>> triangles = model.getFaces();
         for (List<Vector> list : triangles) {
-            Vector normal = findNormal(list);
-            Vector position = camera.getPosition();
+            Vector normal = normalize(findNormal(list));
+            Vector position = normalize(camera.getPosition());
             if (scalarMult(position, normal) > 0) {
-                double intensity = scalarMult(new Vector(position.getX() * (-1), position.getY() * (-1), position.getZ() * (-1)), normal);
+                float intensity = scalarMult(new Vector(position.getX() , position.getY()  , position.getZ()), normal);
                 List<Vector> collect = list.stream().map(camera::transformToScreenVector).collect(Collectors.toList());
                 newTriangles.add(collect);
                 intens.add(intensity);
@@ -76,7 +76,12 @@ public class ModelService {
         return Math.toDegrees(Math.acos(ab / (a * b)));
     }
 
-    private static double scalarMult(Vector vector1, Vector vector2) {
-        return vector1.getX() * vector2.getX() + vector1.getY() * vector2.getY() + vector1.getZ() * vector2.getZ();
+    private static float scalarMult(Vector vector1, Vector vector2) {
+        return (float) (vector1.getX() * vector2.getX() + vector1.getY() * vector2.getY() + vector1.getZ() * vector2.getZ());
+    }
+
+    private Vector normalize(Vector vector) {
+        double sqrt = Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
+        return new Vector(vector.getX() / sqrt, vector.getY() / sqrt, vector.getZ() / sqrt);
     }
 }
