@@ -27,7 +27,7 @@ public class ModelService {
             Vector normal = normalize(findNormal(list));
             Vector position = normalize(camera.getPosition());
             if (scalarMult(position, normal) > 0) {
-                float intensity = scalarMult(new Vector(position.getX() , position.getY()  , position.getZ()), normal);
+                float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
                 List<Vector> collect = list.stream().map(camera::transformToScreenVector).collect(Collectors.toList());
                 newTriangles.add(collect);
                 intens.add(intensity);

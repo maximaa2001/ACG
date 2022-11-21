@@ -1,10 +1,10 @@
 package by.bsuir.akg.entity;
 
 public class Vector {
-    private Double x;
-    private Double y;
-    private Double z;
-    private Double w = 1.0;
+    public Double x;
+    public Double y;
+    public Double z;
+    public Double w = 1.0;
 
     public Vector(Double x, Double y, Double z, Double w) {
         this.x = x;
