@@ -50,4 +50,17 @@ public class Vector {
     public void setW(Double w) {
         this.w = w;
     }
+
+    public Vector normalize4() {
+        double sqrt = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2) + Math.pow(w, 2));
+        return new Vector(x/sqrt, y/sqrt, z/sqrt, w/sqrt);
+    }
+
+    public Vector minus3(Vector vector) {
+        return new Vector(x-vector.getX(), y-vector.getY(), z-vector.getZ());
+    }
+
+    public Vector plus3(Vector vector) {
+        return new Vector(x+vector.getX(), y+vector.getY(), z+vector.getZ());
+    }
 }
