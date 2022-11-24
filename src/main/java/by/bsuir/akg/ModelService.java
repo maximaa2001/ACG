@@ -3,11 +3,11 @@ package by.bsuir.akg;
 import by.bsuir.akg.entity.Camera;
 import by.bsuir.akg.entity.Model;
 import by.bsuir.akg.entity.Vector;
+import by.bsuir.akg.entity.Vertex;
 import by.bsuir.akg.service.DrawService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ModelService {
     private final Model model;
@@ -22,13 +22,17 @@ public class ModelService {
         camera.updateScreenMatrix();
         List<Float> intens = new ArrayList<>();
         List<List<Vector>> newTriangles = new ArrayList<>();
-        List<List<Vector>> triangles = model.getFaces();
-        for (List<Vector> list : triangles) {
+        List<List<Vertex>> triangles = model.getFaces();
+        for (List<Vertex> list : triangles) {
             Vector normal = normalize(findNormal(list));
             Vector position = normalize(camera.getPosition());
             if (scalarMult(position, normal) > 0) {
                 float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
-                List<Vector> collect = list.stream().map(camera::transformToScreenVector).collect(Collectors.toList());
+                List<Vector> collect = new ArrayList<>();
+                int listSize = list.size();
+                for (int i = 0; i < listSize; i++) {
+                    collect.add(camera.transformToScreenVector(list.get(i).position));
+                }
                 newTriangles.add(collect);
                 intens.add(intensity);
             }
@@ -41,10 +45,10 @@ public class ModelService {
         drawService.repaint();
     }
 
-    public static Vector findNormal(List<Vector> triangle) {
-        Vector p1 = triangle.get(0);
-        Vector p2 = triangle.get(1);
-        Vector p3 = triangle.get(2);
+    public static Vector findNormal(List<Vertex> triangle) {
+        Vector p1 = triangle.get(0).position;
+        Vector p2 = triangle.get(1).position;
+        Vector p3 = triangle.get(2).position;
 
         double x1 = p1.getX() - p2.getX();
         double y1 = p1.getY() - p2.getY();

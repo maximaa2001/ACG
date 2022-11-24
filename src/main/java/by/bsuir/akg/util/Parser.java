@@ -3,7 +3,7 @@ package by.bsuir.akg.util;
 import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Model;
 import by.bsuir.akg.entity.Vector;
-import org.apache.commons.math3.geometry.spherical.twod.Vertex;
+import by.bsuir.akg.entity.Vertex;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Parser {
     private List<Vector> verts = new ArrayList<>();
     private List<Vector> norms = new ArrayList<>();
-    private List<List<Integer>> faces = new ArrayList<>();
+    private List<List<Vertex>> faces = new ArrayList<>();
 
     public Model readObject() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
@@ -28,35 +28,32 @@ public class Parser {
                 String[] parts = str.split(" +");
                 verts.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]),Double.parseDouble(parts[3])));
             } else if(str.startsWith("f ")) {
-                List<Integer> polygon = new ArrayList<>();
+                List<Vertex> polygon = new ArrayList<>();
                 String[] parts = str.split(" +");
                 for (int i = 1; i < parts.length; i++) {
                     String[] split = parts[i].split("/");
                     if(split.length > 1) {
-                        polygon.add(Integer.parseInt(split[0]));
+                        polygon.add(new Vertex(verts.get(Integer.parseInt(split[0]) - 1), norms.get(Integer.parseInt(split[split.length - 1]) - 1)));
                     } else {
                         String[] split2 = parts[i].split("//");
                         if(split2.length > 1) {
-                            polygon.add(Integer.parseInt(split2[0]));
+                            polygon.add(new Vertex(verts.get(Integer.parseInt(split[0]) - 1), norms.get(Integer.parseInt(split2[split2.length - 1]) - 1)));
                         }
                     }
                 }
                 faces.add(polygon);
             }
         }
-        List<List<Vector>> triangles = new ArrayList<>();
+        List<List<Vertex>> triangles = new ArrayList<>();
         faces.forEach(polygon -> {
-            List<Vector> collect = polygon.stream()
-                    .map(numberOfVertex -> verts.get(numberOfVertex - 1))
-                    .collect(Collectors.toList());
-            List<List<Vector>> triangles1 = getTriangles(collect);
+            List<List<Vertex>> triangles1 = getTriangles(polygon);
             triangles.addAll(triangles1);
         });
         return new Model(verts, norms, triangles);
     }
 
-    private List<List<Vector>> getTriangles(List<Vector> polygon) {
-        List<List<Vector>> triangles = new ArrayList<>();
+    private List<List<Vertex>> getTriangles(List<Vertex> polygon) {
+        List<List<Vertex>> triangles = new ArrayList<>();
         if(polygon.size() == 3) {
             triangles.add(polygon);
         } else {
