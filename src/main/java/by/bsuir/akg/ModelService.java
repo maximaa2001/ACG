@@ -21,17 +21,19 @@ public class ModelService {
     public void render() {
         camera.updateScreenMatrix();
         List<Float> intens = new ArrayList<>();
-        List<List<Vector>> newTriangles = new ArrayList<>();
+        List<List<Vertex>> newTriangles = new ArrayList<>();
         List<List<Vertex>> triangles = model.getFaces();
-        for (List<Vertex> list : triangles) {
-            Vector normal = normalize(findNormal(list));
+        int trianglesSize = triangles.size();
+        for (int i = 0; i < trianglesSize; i++) {
+            Vector normal = normalize(findNormal(triangles.get(i)));
             Vector position = normalize(camera.getPosition());
             if (scalarMult(position, normal) > 0) {
                 float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
-                List<Vector> collect = new ArrayList<>();
-                int listSize = list.size();
-                for (int i = 0; i < listSize; i++) {
-                    collect.add(camera.transformToScreenVector(list.get(i).position));
+                List<Vertex> collect = new ArrayList<>();
+                int listSize = triangles.get(i).size();
+                for (int j = 0; j < listSize; j++) {
+                     triangles.get(i).get(j).position_screen = camera.transformToScreenVector(triangles.get(i).get(j).position);
+                     collect.add(triangles.get(i).get(j));
                 }
                 newTriangles.add(collect);
                 intens.add(intensity);
@@ -39,8 +41,10 @@ public class ModelService {
         }
         DrawService drawService = DrawService.getInstance(null);
         drawService.clear();
-        for (int i = 0; i < newTriangles.size(); i++) {
-            drawService.drawTriangle(newTriangles.get(i), intens.get(i));
+        int newTrianglesSize = newTriangles.size();
+        for (int i = 0; i < newTrianglesSize; i++) {
+//            drawService.drawTriangle(newTriangles.get(i), intens.get(i));
+            drawService.fillTriangle(newTriangles.get(i));
         }
         drawService.repaint();
     }

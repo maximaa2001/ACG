@@ -51,9 +51,9 @@ public class Vector {
         this.w = w;
     }
 
-    public Vector normalize4() {
-        double sqrt = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2) + Math.pow(w, 2));
-        return new Vector(x/sqrt, y/sqrt, z/sqrt, w/sqrt);
+    public Vector normalize3() {
+        double sqrt = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+        return new Vector(x/sqrt, y/sqrt, z/sqrt);
     }
 
     public Vector minus3(Vector vector) {

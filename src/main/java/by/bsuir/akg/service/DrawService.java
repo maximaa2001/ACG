@@ -3,6 +3,7 @@ package by.bsuir.akg.service;
 import by.bsuir.akg.RenderController;
 import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Vector;
+import by.bsuir.akg.entity.Vertex;
 
 import java.awt.*;
 import java.util.List;
@@ -27,17 +28,17 @@ public class DrawService {
         return instance;
     }
 
-    public void drawTriangle(List<Vector> triangle, float intens) {
-        Vector p1 = triangle.get(0);
-        Vector p2 = triangle.get(1);
-        Vector p3 = triangle.get(2);
-        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue(), intens);
-        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens);
-        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens);
-        fillTriangle(p1, p2, p3, intens);
+    public void drawTriangle(List<Vertex> triangle, float intens) {
+        Vector p1 = triangle.get(0).position_screen;
+        Vector p2 = triangle.get(1).position_screen;
+        Vector p3 = triangle.get(2).position_screen;
+        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue(), intens, triangle);
+        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens, triangle);
+        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens, triangle);
+        fillTriangle(triangle);
     }
 
-    public void drawDda(int x1, int y1, int x2, int y2, float intens) {
+    public void drawDda(int x1, int y1, int x2, int y2, float intens, List<Vertex> triangle) {
         int L = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
         double currentX = x1;
         double currentY = y1;
@@ -47,7 +48,11 @@ public class DrawService {
             if (Math.round(currentX) < 0 || Math.round(currentX) >= Const.WIDTH || Math.round(currentY) < 0 || Math.round(currentY) >= Const.HEIGHT) {
                 break;
             }
-            drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
+            int x = (int) Math.round(currentX);
+            int y = (int) Math.round(currentY);
+            Vector color = InterpolationService.interpolation(x, y, triangle);
+            drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
+//            drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
             currentX += dx;
             currentY += dy;
         }
@@ -62,30 +67,35 @@ public class DrawService {
     }
 
     private void drawPixel(int x, int y, float red, float green, float blue) {
-        //int rgb = (red << 16 | green << 8 | blue);
-        // Color color = new Color((float) (red * 0.5 + 0.5), (float) (green * 0.5 + 0.5), (float) (blue * 0.5 + 0.5));
         Color color = new Color(red, green, blue);
-        //renderController.getBufferedImage().setRGB(x, y, color.getRGB());
         renderController.getBufferedImage().setRGB(x, y, color.getRGB());
     }
 
-    private void fillTriangle(Vector p1, Vector p2, Vector p3, float intens) {
-        Vector topLeft = topLeft(p1, p2, p3);
-        Vector bottomRight = bottomRight(p1, p2, p3);
+    public void fillTriangle(List<Vertex> triangle) {
+        Vector topLeft = topLeft(
+                triangle.get(0).position_screen,
+                triangle.get(1).position_screen,
+                triangle.get(2).position_screen);
+        Vector bottomRight = bottomRight(
+                triangle.get(0).position_screen,
+                triangle.get(1).position_screen,
+                triangle.get(2).position_screen);
         if (topLeft.getX() < 0 || topLeft.getY() < 0 || bottomRight.getX() < 0 || bottomRight.getY() < 0
-                || topLeft.getX() > Const.WIDTH || topLeft.getY() > Const.HEIGHT || bottomRight.getX() > Const.WIDTH || bottomRight.getY() > Const.HEIGHT) {
+                || topLeft.getX() > Const.WIDTH || topLeft.getY() > Const.HEIGHT
+                || bottomRight.getX() > Const.WIDTH || bottomRight.getY() > Const.HEIGHT) {
             return;
         }
         for (int y = topLeft.getY().intValue(); y < bottomRight.getY().intValue(); y++) {
             for (int x = topLeft.getX().intValue(); x < bottomRight.getX().intValue(); x++) {
-                if (isInTriangle(new Vector((double) x, (double) y, 0.0), p1, p2, p3)) {
+                if (isInTriangle(new Vector((double) x, (double) y, 0.0),
+                        triangle.get(0).position_screen,
+                        triangle.get(1).position_screen,
+                        triangle.get(2).position_screen)) {
                     if (x < 0 || x >= Const.WIDTH || y < 0 || y >= Const.HEIGHT) {
                         continue;
                     }
-                    // if(zBuffer[y][x] == null ||  nz < zBuffer[y][x]) {
-                    drawPixel(x, y, intens, intens, intens);
-                    //  zBuffer[y][x] = nz;
-                    //  }
+                    Vector color = InterpolationService.interpolation(x, y, triangle);
+                    drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
                 }
             }
         }
