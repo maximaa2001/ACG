@@ -23,17 +23,16 @@ public class ModelService {
         List<Float> intens = new ArrayList<>();
         List<List<Vertex>> newTriangles = new ArrayList<>();
         List<List<Vertex>> triangles = model.getFaces();
-        int trianglesSize = triangles.size();
-        for (int i = 0; i < trianglesSize; i++) {
-            Vector normal = normalize(findNormal(triangles.get(i)));
+        for (List<Vertex> triangle : triangles) {
+            Vector normal = normalize(findNormal(triangle));
             Vector position = normalize(camera.getPosition());
             if (scalarMult(position, normal) > 0) {
                 float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
                 List<Vertex> collect = new ArrayList<>();
-                int listSize = triangles.get(i).size();
+                int listSize = triangle.size();
                 for (int j = 0; j < listSize; j++) {
-                     triangles.get(i).get(j).position_screen = camera.transformToScreenVector(triangles.get(i).get(j).position);
-                     collect.add(triangles.get(i).get(j));
+                    triangle.get(j).position_screen = camera.transformToScreenVector(triangle.get(j).position);
+                    collect.add(triangle.get(j));
                 }
                 newTriangles.add(collect);
                 intens.add(intensity);
@@ -41,10 +40,8 @@ public class ModelService {
         }
         DrawService drawService = DrawService.getInstance(null);
         drawService.clear();
-        int newTrianglesSize = newTriangles.size();
-        for (int i = 0; i < newTrianglesSize; i++) {
-//            drawService.drawTriangle(newTriangles.get(i), intens.get(i));
-            drawService.fillTriangle(newTriangles.get(i));
+        for (List<Vertex> newTriangle : newTriangles) {
+            drawService.drawTriangle(newTriangle);
         }
         drawService.repaint();
     }

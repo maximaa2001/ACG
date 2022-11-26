@@ -28,17 +28,21 @@ public class DrawService {
         return instance;
     }
 
-    public void drawTriangle(List<Vertex> triangle, float intens) {
-        Vector p1 = triangle.get(0).position_screen;
-        Vector p2 = triangle.get(1).position_screen;
-        Vector p3 = triangle.get(2).position_screen;
-        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue(), intens, triangle);
-        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens, triangle);
-        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens, triangle);
+    public void drawTriangle(List<Vertex> triangle) {
+        Vertex p1 = triangle.get(0);
+        Vertex p2 = triangle.get(1);
+        Vertex p3 = triangle.get(2);
+        drawDda(p1, p2);
+        drawDda(p2, p3);
+        drawDda(p1, p3);
         fillTriangle(triangle);
     }
 
-    public void drawDda(int x1, int y1, int x2, int y2, float intens, List<Vertex> triangle) {
+    public void drawDda(Vertex vertex1, Vertex vertex2) {
+        int x1 = vertex1.position_screen.getX().intValue();
+        int y1 = vertex1.position_screen.getY().intValue();
+        int x2 = vertex2.position_screen.getX().intValue();
+        int y2 = vertex2.position_screen.getY().intValue();
         int L = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
         double currentX = x1;
         double currentY = y1;
@@ -46,11 +50,11 @@ public class DrawService {
         double dy = (y2 - y1) / (double) L;
         for (int i = 0; i < L; i++) {
             if (Math.round(currentX) < 0 || Math.round(currentX) >= Const.WIDTH || Math.round(currentY) < 0 || Math.round(currentY) >= Const.HEIGHT) {
-                break;
+                continue;
             }
             int x = (int) Math.round(currentX);
             int y = (int) Math.round(currentY);
-            Vector color = InterpolationService.interpolation(x, y, triangle);
+            Vector color = InterpolationService.interpolationLine(currentX, currentY, vertex1, vertex2);
             drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
 //            drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
             currentX += dx;
@@ -124,9 +128,9 @@ public class DrawService {
 
     private double min(Double... numbers) {
         Double min = Double.MAX_VALUE;
-        for (int i = 0; i < numbers.length; i++) {
-            if (numbers[i] < min) {
-                min = numbers[i];
+        for (Double number : numbers) {
+            if (number < min) {
+                min = number;
             }
         }
         return min;
@@ -134,9 +138,9 @@ public class DrawService {
 
     private double max(Double... numbers) {
         Double max = -Double.MAX_VALUE;
-        for (int i = 0; i < numbers.length; i++) {
-            if (numbers[i] > max) {
-                max = numbers[i];
+        for (Double number : numbers) {
+            if (number > max) {
+                max = number;
             }
         }
         return max;
