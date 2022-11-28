@@ -26,13 +26,13 @@ public class ModelService {
         for (List<Vertex> triangle : triangles) {
             Vector normal = normalize(findNormal(triangle));
             Vector position = normalize(camera.getPosition());
-            if (scalarMult(position, normal) > 0) {
-                float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
+            float intensity = scalarMult(position, normal);
+            if (intensity > 0) {
+      //          float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
                 List<Vertex> collect = new ArrayList<>();
-                int listSize = triangle.size();
-                for (int j = 0; j < listSize; j++) {
-                    triangle.get(j).position_screen = camera.transformToScreenVector(triangle.get(j).position);
-                    collect.add(triangle.get(j));
+                for (Vertex vertex : triangle) {
+                    vertex.position_screen = camera.transformToScreenVector(vertex.position);
+                    collect.add(vertex);
                 }
                 newTriangles.add(collect);
                 intens.add(intensity);

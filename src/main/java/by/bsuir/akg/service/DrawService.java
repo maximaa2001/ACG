@@ -12,10 +12,15 @@ public class DrawService {
     private static DrawService instance;
     private static RenderController renderController;
 
-    private Double[] zBuffer = new Double[Const.WIDTH * Const.HEIGHT];
+    private Double[][] zBuffer = new Double[Const.HEIGHT][Const.WIDTH];
 
     private DrawService() {
+        for (int i = 0; i < Const.HEIGHT; i++) {
+            for (int j = 0; j < Const.WIDTH; j++) {
+                zBuffer[i][j] = 100000.0;
+            }
 
+        }
     }
 
     public static DrawService getInstance(RenderController renderController1) {
@@ -32,11 +37,73 @@ public class DrawService {
         Vertex p1 = triangle.get(0);
         Vertex p2 = triangle.get(1);
         Vertex p3 = triangle.get(2);
+        if (p1.position_screen.getX() < 0 || p2.position_screen.getX() < 0 || p3.position_screen.getX() < 0) return;
+        if (p1.position_screen.getY() < 0 || p2.position_screen.getY() < 0 || p3.position_screen.getY() < 0) return;
         drawDda(p1, p2);
         drawDda(p2, p3);
         drawDda(p1, p3);
+//        for (int Y = p1.position_screen.getY().intValue(); Y < p2.position_screen.getY().intValue(); Y++) {
+//            double x1 = p1.position_screen.getX();
+//            double x2 = p2.position_screen.getX();
+//            double x3 = p3.position_screen.getX();
+//
+//            double z1 = p1.position_screen.getZ();
+//            double z2 = p2.position_screen.getZ();
+//            double z3 = p3.position_screen.getZ();
+//
+//            double y3 = p3.position_screen.getY();
+//            double y2 = p2.position_screen.getY();
+//
+//            double xl = x1 + (x2 - x1) * ((Y - p1.position_screen.getY()) / (y2 - p1.position_screen.getY()));
+//            double xr = x1 + (x3 - x1) * ((Y - p1.position_screen.getY()) / (y3 - p1.position_screen.getY()));
+//            double zl = z1 + (z2 - z1) * ((Y - p1.position_screen.getY()) / (y2 - p1.position_screen.getY()));
+//            double zr = z1 + (z3 - z1) * ((Y - p1.position_screen.getY()) / (y3 - p1.position_screen.getY()));
+//            fillLine(xl, xr, zl, zr, Y, triangle);
+//        }
+//
+//        for (int Y = p2.position_screen.getY().intValue(); Y < p3.position_screen.getY().intValue(); Y++) {
+//            double x1 = p1.position_screen.getX();
+//            double x2 = p2.position_screen.getX();
+//            double x3 = p3.position_screen.getX();
+//
+//            double z1 = p1.position_screen.getZ();
+//            double z2 = p2.position_screen.getZ();
+//            double z3 = p3.position_screen.getZ();
+//
+//            double y3 = p3.position_screen.getY();
+//            double y1 = p1.position_screen.getY();
+//
+//            double xl = x2 + (x3 - x2) * ((Y - p2.position_screen.getY()) / (y3 - p2.position_screen.getY()));
+//            double xr = x1 + (x3 - x1) * ((Y - y1) / (y3 - y1));
+//            double zl = z2 + (z3 - z2) * ((Y - p2.position_screen.getY()) / (y3 - p2.position_screen.getY()));
+//            double zr = z1 + (z3 - z1) * ((Y - y1) / (y3 - y1));
+//            fillLine(xl, xr, zl, zr, Y, triangle);
+//        }
         fillTriangle(triangle);
     }
+
+//    private void fillLine(double xl, double xr, double zl, double zr, int Y, List<Vertex> triangle) {
+////        var xl = _xl
+////        var xr = _xr
+//        if (xl > xr) {
+//            double t = xr;
+//            xr = xl;
+//            xl = t;
+//        }
+//        for (int X = (int) Math.round(xl); X < (int) Math.round(xr); X++) {
+//            if (X > 0 && X < Const.WIDTH && Y > 0 && Y < Const.HEIGHT) {
+//                double nz = zl + (zr - zl) * ((X - xl) / (xr - xl));
+//                if (zBuffer[Y][X] > nz) {
+//                    List<Vector> vectors = InterpolationService.interpolation(X, Y, triangle);
+//                    if(zBuffer[Y][X] > vectors.get(1).getZ()) {
+//                        Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
+//                        drawPixel(X, Y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
+//                        zBuffer[Y][X] = vectors.get(1).getZ();
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void drawDda(Vertex vertex1, Vertex vertex2) {
         int x1 = vertex1.position_screen.getX().intValue();
@@ -49,13 +116,19 @@ public class DrawService {
         double dx = (x2 - x1) / (double) L;
         double dy = (y2 - y1) / (double) L;
         for (int i = 0; i < L; i++) {
-            if (Math.round(currentX) < 0 || Math.round(currentX) >= Const.WIDTH || Math.round(currentY) < 0 || Math.round(currentY) >= Const.HEIGHT) {
-                continue;
-            }
             int x = (int) Math.round(currentX);
             int y = (int) Math.round(currentY);
-            Vector color = InterpolationService.interpolationLine(currentX, currentY, vertex1, vertex2);
-            drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
+            if (x < 0 || x >= Const.WIDTH || y < 0 || y >= Const.HEIGHT) {
+                continue;
+            }
+            List<Vector> vectors = InterpolationService.interpolationNormalPositionLine(currentX, currentY, vertex1, vertex2);
+            double z = InterpolationService.interpolationZ(x, y, vertex1, vertex2);
+            if(zBuffer[y][x] > z) {
+                Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
+//            Vector color = InterpolationService.interpolationLine(currentX, currentY, vertex1, vertex2);
+                drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
+                zBuffer[y][x] = z;
+            }
 //            drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
             currentX += dx;
             currentY += dy;
@@ -64,7 +137,12 @@ public class DrawService {
 
     public void clear() {
         renderController.getBufferedImage().getGraphics().clearRect(0, 0, Const.WIDTH, Const.HEIGHT);
-    }
+        for (int i = 0; i < Const.HEIGHT; i++) {
+            for (int j = 0; j < Const.WIDTH; j++) {
+                zBuffer[i][j] = 100000.0;
+            }
+        }
+        }
 
     public void repaint() {
         renderController.getPanel().repaint();
@@ -98,8 +176,15 @@ public class DrawService {
                     if (x < 0 || x >= Const.WIDTH || y < 0 || y >= Const.HEIGHT) {
                         continue;
                     }
-                    Vector color = InterpolationService.interpolation(x, y, triangle);
-                    drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
+                    List<Vector> vectors = InterpolationService.interpolationNormalPosition(x, y, triangle);
+                    double z = InterpolationService.interpolationZTriangle(x, y, triangle);
+                    if(zBuffer[y][x] > z) {
+                        Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
+//            Vector color = InterpolationService.interpolationLine(currentX, currentY, vertex1, vertex2);
+                        drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
+                        zBuffer[y][x] = z;
+                    }
+
                 }
             }
         }
