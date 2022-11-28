@@ -6,6 +6,6 @@ public class Const {
 
     public final static Double FAR = 100.0;
 
-    public final static String PATH_TO_OBJECT = "/Users/yurchenko/IdeaProjects/CGA_1/src/by/bsuir/model.obj";
+    public final static String PATH_TO_OBJECT = "/home/maks/model.obj";
 
 }

@@ -42,68 +42,8 @@ public class DrawService {
         drawDda(p1, p2);
         drawDda(p2, p3);
         drawDda(p1, p3);
-//        for (int Y = p1.position_screen.getY().intValue(); Y < p2.position_screen.getY().intValue(); Y++) {
-//            double x1 = p1.position_screen.getX();
-//            double x2 = p2.position_screen.getX();
-//            double x3 = p3.position_screen.getX();
-//
-//            double z1 = p1.position_screen.getZ();
-//            double z2 = p2.position_screen.getZ();
-//            double z3 = p3.position_screen.getZ();
-//
-//            double y3 = p3.position_screen.getY();
-//            double y2 = p2.position_screen.getY();
-//
-//            double xl = x1 + (x2 - x1) * ((Y - p1.position_screen.getY()) / (y2 - p1.position_screen.getY()));
-//            double xr = x1 + (x3 - x1) * ((Y - p1.position_screen.getY()) / (y3 - p1.position_screen.getY()));
-//            double zl = z1 + (z2 - z1) * ((Y - p1.position_screen.getY()) / (y2 - p1.position_screen.getY()));
-//            double zr = z1 + (z3 - z1) * ((Y - p1.position_screen.getY()) / (y3 - p1.position_screen.getY()));
-//            fillLine(xl, xr, zl, zr, Y, triangle);
-//        }
-//
-//        for (int Y = p2.position_screen.getY().intValue(); Y < p3.position_screen.getY().intValue(); Y++) {
-//            double x1 = p1.position_screen.getX();
-//            double x2 = p2.position_screen.getX();
-//            double x3 = p3.position_screen.getX();
-//
-//            double z1 = p1.position_screen.getZ();
-//            double z2 = p2.position_screen.getZ();
-//            double z3 = p3.position_screen.getZ();
-//
-//            double y3 = p3.position_screen.getY();
-//            double y1 = p1.position_screen.getY();
-//
-//            double xl = x2 + (x3 - x2) * ((Y - p2.position_screen.getY()) / (y3 - p2.position_screen.getY()));
-//            double xr = x1 + (x3 - x1) * ((Y - y1) / (y3 - y1));
-//            double zl = z2 + (z3 - z2) * ((Y - p2.position_screen.getY()) / (y3 - p2.position_screen.getY()));
-//            double zr = z1 + (z3 - z1) * ((Y - y1) / (y3 - y1));
-//            fillLine(xl, xr, zl, zr, Y, triangle);
-//        }
         fillTriangle(triangle);
     }
-
-//    private void fillLine(double xl, double xr, double zl, double zr, int Y, List<Vertex> triangle) {
-////        var xl = _xl
-////        var xr = _xr
-//        if (xl > xr) {
-//            double t = xr;
-//            xr = xl;
-//            xl = t;
-//        }
-//        for (int X = (int) Math.round(xl); X < (int) Math.round(xr); X++) {
-//            if (X > 0 && X < Const.WIDTH && Y > 0 && Y < Const.HEIGHT) {
-//                double nz = zl + (zr - zl) * ((X - xl) / (xr - xl));
-//                if (zBuffer[Y][X] > nz) {
-//                    List<Vector> vectors = InterpolationService.interpolation(X, Y, triangle);
-//                    if(zBuffer[Y][X] > vectors.get(1).getZ()) {
-//                        Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
-//                        drawPixel(X, Y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
-//                        zBuffer[Y][X] = vectors.get(1).getZ();
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     public void drawDda(Vertex vertex1, Vertex vertex2) {
         int x1 = vertex1.position_screen.getX().intValue();
