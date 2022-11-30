@@ -11,10 +11,14 @@ public class DrawService {
     private static DrawService instance;
     private static RenderController renderController;
 
-    private Double[] zBuffer = new Double[Const.WIDTH * Const.HEIGHT];
+    private Double[][] zBuffer = new Double[Const.HEIGHT][Const.WIDTH];
 
     private DrawService() {
-
+        for (int i = 0; i < Const.HEIGHT; i++) {
+            for (int j = 0; j < Const.WIDTH; j++) {
+                zBuffer[i][j] = 100000.0;
+            }
+        }
     }
 
     public static DrawService getInstance(RenderController renderController1) {
@@ -31,13 +35,13 @@ public class DrawService {
         Vector p1 = triangle.get(0);
         Vector p2 = triangle.get(1);
         Vector p3 = triangle.get(2);
-        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue(), intens);
-        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens);
-        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens);
+        drawDda(p1.getX().intValue(), p1.getY().intValue(), p2.getX().intValue(), p2.getY().intValue(), intens, p1, p2);
+        drawDda(p2.getX().intValue(), p2.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens, p2, p3);
+        drawDda(p1.getX().intValue(), p1.getY().intValue(), p3.getX().intValue(), p3.getY().intValue(), intens, p1, p3);
         fillTriangle(p1, p2, p3, intens);
     }
 
-    public void drawDda(int x1, int y1, int x2, int y2, float intens) {
+    public void drawDda(int x1, int y1, int x2, int y2, float intens, Vector v1, Vector v2) {
         int L = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
         double currentX = x1;
         double currentY = y1;
@@ -47,7 +51,11 @@ public class DrawService {
             if (Math.round(currentX) < 0 || Math.round(currentX) >= Const.WIDTH || Math.round(currentY) < 0 || Math.round(currentY) >= Const.HEIGHT) {
                 break;
             }
-            drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
+            double z = InterpolationService.interpolationZ(currentX, currentY, v1, v2);
+            if (zBuffer[(int) Math.round(currentY)][(int) Math.round(currentX)] > z) {
+                drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
+                zBuffer[(int) Math.round(currentY)][(int) Math.round(currentX)] = z;
+            }
             currentX += dx;
             currentY += dy;
         }
@@ -55,6 +63,11 @@ public class DrawService {
 
     public void clear() {
         renderController.getBufferedImage().getGraphics().clearRect(0, 0, Const.WIDTH, Const.HEIGHT);
+        for (int i = 0; i < Const.HEIGHT; i++) {
+            for (int j = 0; j < Const.WIDTH; j++) {
+                zBuffer[i][j] = 100000.0;
+            }
+        }
     }
 
     public void repaint() {
@@ -83,7 +96,11 @@ public class DrawService {
                         continue;
                     }
                     // if(zBuffer[y][x] == null ||  nz < zBuffer[y][x]) {
-                    drawPixel(x, y, intens, intens, intens);
+                    double z = InterpolationService.interpolationZTriangle(x, y, p1, p2, p3);
+                    if(zBuffer[y][x] > z) {
+                        drawPixel(x, y, intens, intens, intens);
+                        zBuffer[y][x] = z;
+                    }
                     //  zBuffer[y][x] = nz;
                     //  }
                 }
