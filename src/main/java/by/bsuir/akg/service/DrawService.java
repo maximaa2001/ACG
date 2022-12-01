@@ -91,6 +91,7 @@ public class DrawService {
     private void drawPixel(int x, int y, float red, float green, float blue) {
         Color color = new Color(red, green, blue);
         renderController.getBufferedImage().setRGB(x, y, color.getRGB());
+
     }
 
     public void fillTriangle(List<Vertex> triangle) {
@@ -134,7 +135,7 @@ public class DrawService {
         int aSide = ((p1.getY().intValue() - p2.getY().intValue()) * p.getX().intValue() + (p2.getX().intValue() - p1.getX().intValue()) * p.getY().intValue() + (p1.getX().intValue() * p2.getY().intValue() - p2.getX().intValue() * p1.getY().intValue()));
         int bSide = ((p2.getY().intValue() - p3.getY().intValue()) * p.getX().intValue() + (p3.getX().intValue() - p2.getX().intValue()) * p.getY().intValue() + (p2.getX().intValue() * p3.getY().intValue() - p3.getX().intValue() * p2.getY().intValue()));
         int cSide = ((p3.getY().intValue() - p1.getY().intValue()) * p.getX().intValue() + (p1.getX().intValue() - p3.getX().intValue()) * p.getY().intValue() + (p3.getX().intValue() * p1.getY().intValue() - p1.getX().intValue() * p3.getY().intValue()));
-        return (aSide >= 0 && bSide >= 0 && cSide >= 0) || (aSide < 0 && bSide < 0 && cSide < 0);
+        return (aSide >= 0 && bSide >= 0 && cSide >= 0) || (aSide <= 0 && bSide <= 0 && cSide <= 0);
     }
 
     private Vector topLeft(Vector p1, Vector p2, Vector p3) {
