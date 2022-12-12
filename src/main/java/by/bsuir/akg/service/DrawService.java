@@ -5,7 +5,11 @@ import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Vector;
 import by.bsuir.akg.entity.Vertex;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class DrawService {
@@ -65,11 +69,9 @@ public class DrawService {
             double z = InterpolationService.interpolationZ(x, y, vertex1, vertex2);
             if(zBuffer[y][x] > z) {
                 Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
-//            Vector color = InterpolationService.interpolationLine(currentX, currentY, vertex1, vertex2);
                 drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
                 zBuffer[y][x] = z;
             }
-//            drawPixel((int) Math.round(currentX), (int) Math.round(currentY), intens, intens, intens);
             currentX += dx;
             currentY += dy;
         }

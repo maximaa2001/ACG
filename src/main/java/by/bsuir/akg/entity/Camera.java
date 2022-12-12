@@ -6,8 +6,8 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 
 public class Camera {
-    private Vector position = new Vector(130.0, 80.0, 300.0);
-    private Vector target = new Vector(0.0, 50.0, 0.0);
+    private Vector position = new Vector(10.0, 10.0, 3.0);
+    private Vector target = new Vector(0.0, 0.0, 0.0);
     private Vector up = new Vector(0.0, 1.0, 0.0);
     private Double fow = Math.PI / 4f;
 
