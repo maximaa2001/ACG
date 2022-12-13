@@ -30,9 +30,9 @@ public class TextureService {
         Vector normal = getTextureNormal(x, y, bufferedImageNormal);
         Vector mirror = getTexturePoint(x, y, bufferedImageMirror);
         List<Vector> vectors = new ArrayList<>();
-        vectors.add(color);
-        vectors.add(normal);
-        vectors.add(mirror);
+        vectors.add(color);//diffuse ambient
+        vectors.add(normal);//
+        vectors.add(mirror);// specular albedo, power???
         return vectors;
     }
 
