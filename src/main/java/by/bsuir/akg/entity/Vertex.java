@@ -7,6 +7,8 @@ public class Vertex {
 
     public Vector position_screen = null;
 
+    public Double w = null;
+
 
     public Vertex(Vector position,Texture texture, Vector normal){
         this.position = position;

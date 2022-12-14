@@ -31,6 +31,7 @@ public class ModelService {
       //          float intensity = scalarMult(new Vector(position.getX(), position.getY(), position.getZ()), normal);
                 List<Vertex> collect = new ArrayList<>();
                 for (Vertex vertex : triangle) {
+                    vertex.w = camera.getWFromTransformationToScreenVector(vertex.position);
                     vertex.position_screen = camera.transformToScreenVector(vertex.position);
                     collect.add(vertex);
                 }

@@ -2,21 +2,28 @@ package by.bsuir.akg.service;
 
 import by.bsuir.akg.RenderController;
 import by.bsuir.akg.constant.Const;
+import by.bsuir.akg.entity.Texture;
 import by.bsuir.akg.entity.Vector;
 import by.bsuir.akg.entity.Vertex;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class DrawService {
     private static DrawService instance;
     private static RenderController renderController;
+    private static TextureService textureService;
 
-    private Double[][] zBuffer = new Double[Const.HEIGHT][Const.WIDTH];
+    static {
+        try {
+            textureService = new TextureService();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private final Double[][] zBuffer = new Double[Const.HEIGHT][Const.WIDTH];
 
     private DrawService() {
         for (int i = 0; i < Const.HEIGHT; i++) {
@@ -43,13 +50,14 @@ public class DrawService {
         Vertex p3 = triangle.get(2);
         if (p1.position_screen.getX() < 0 || p2.position_screen.getX() < 0 || p3.position_screen.getX() < 0) return;
         if (p1.position_screen.getY() < 0 || p2.position_screen.getY() < 0 || p3.position_screen.getY() < 0) return;
-        drawDda(p1, p2);
-        drawDda(p2, p3);
-        drawDda(p1, p3);
         fillTriangle(triangle);
+        drawDda(p1, p2, triangle);
+        drawDda(p2, p3, triangle);
+        drawDda(p1, p3, triangle);
+
     }
 
-    public void drawDda(Vertex vertex1, Vertex vertex2) {
+    public void drawDda(Vertex vertex1, Vertex vertex2, List<Vertex> triangle) {
         int x1 = vertex1.position_screen.getX().intValue();
         int y1 = vertex1.position_screen.getY().intValue();
         int x2 = vertex2.position_screen.getX().intValue();
@@ -65,10 +73,35 @@ public class DrawService {
             if (x < 0 || x >= Const.WIDTH || y < 0 || y >= Const.HEIGHT) {
                 continue;
             }
-            List<Vector> vectors = InterpolationService.interpolationNormalPositionLine(currentX, currentY, vertex1, vertex2);
-            double z = InterpolationService.interpolationZ(x, y, vertex1, vertex2);
+            double z = InterpolationService.interpolationZ(x, vertex1, vertex2);
             if(zBuffer[y][x] > z) {
-                Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
+                List<Double> listKs = InterpolationService.getInterpolationKs(triangle.get(0), triangle.get(1), triangle.get(2), x, y);
+                Texture texture = InterpolationService.interpolateTexture(
+                        triangle.get(0).texture,
+                        triangle.get(1).texture,
+                        triangle.get(2).texture,
+                        triangle.get(0).w,
+                        triangle.get(1).w,
+                        triangle.get(2).w,
+                        listKs.get(0),
+                        listKs.get(1),
+                        listKs.get(2));
+                Vector worldVector = InterpolationService.interpolateWorldVectorWithPerspective(
+                        triangle.get(0),
+                        triangle.get(1),
+                        triangle.get(2),
+                        triangle.get(0).w,
+                        triangle.get(1).w,
+                        triangle.get(2).w,
+                        listKs.get(0),
+                        listKs.get(1),
+                        listKs.get(2));
+                List<Vector> colorNormalMirrorList = textureService.getTextureVectors(texture.getX(), texture.getY());
+                Vector color = PhongShader.getPhongColorWithTexture(
+                        worldVector,
+                        colorNormalMirrorList.get(1),
+                        colorNormalMirrorList.get(0),
+                        colorNormalMirrorList.get(2));
                 drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
                 zBuffer[y][x] = z;
             }
@@ -119,10 +152,38 @@ public class DrawService {
                     if (x < 0 || x >= Const.WIDTH || y < 0 || y >= Const.HEIGHT) {
                         continue;
                     }
-                    List<Vector> vectors = InterpolationService.interpolationNormalPosition(x, y, triangle);
+
                     double z = InterpolationService.interpolationZTriangle(x, y, triangle);
                     if(zBuffer[y][x] > z) {
-                        Vector color = PhongShader.getPhongColor(vectors.get(1), vectors.get(0));
+                        List<Double> listKs = InterpolationService.getInterpolationKs(triangle.get(0), triangle.get(1), triangle.get(2), x, y);
+                        Texture texture = InterpolationService.interpolateTexture(
+                                triangle.get(0).texture,
+                                triangle.get(1).texture,
+                                triangle.get(2).texture,
+                                triangle.get(0).w,
+                                triangle.get(1).w,
+                                triangle.get(2).w,
+                                listKs.get(0),
+                                listKs.get(1),
+                                listKs.get(2));
+                        Vector worldVector = InterpolationService.interpolateWorldVectorWithPerspective(
+                                triangle.get(0),
+                                triangle.get(1),
+                                triangle.get(2),
+                                triangle.get(0).w,
+                                triangle.get(1).w,
+                                triangle.get(2).w,
+                                listKs.get(0),
+                                listKs.get(1),
+                                listKs.get(2));
+                        List<Vector> colorNormalMirrorList = textureService.getTextureVectors(texture.getX(), texture.getY());
+                        Vector color = PhongShader.getPhongColorWithTexture(
+                                worldVector,
+                                colorNormalMirrorList.get(1),
+                                colorNormalMirrorList.get(0),
+                                colorNormalMirrorList.get(2));
+
+                        //Vector color = PhongShader.getPhongColor(worldVector, vectors.get(0) );
 //            Vector color = InterpolationService.interpolationLine(currentX, currentY, vertex1, vertex2);
                         drawPixel(x, y, color.getX().floatValue(), color.getY().floatValue(), color.getZ().floatValue());
                         zBuffer[y][x] = z;

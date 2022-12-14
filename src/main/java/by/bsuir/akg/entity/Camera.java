@@ -6,8 +6,8 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 
 public class Camera {
-    private Vector position = new Vector(10.0, 10.0, 3.0);
-    private Vector target = new Vector(0.0, 0.0, 0.0);
+    private Vector position = new Vector(20.0, 10.0, 10.0);
+    private Vector target = new Vector(-5.0, 3.0, 0.0);
     private Vector up = new Vector(0.0, 1.0, 0.0);
     private Double fow = Math.PI / 4f;
 
@@ -24,6 +24,11 @@ public class Camera {
         windowMatrix = createWindowMatrix();
     }
 
+    public Double getWFromTransformationToScreenVector(Vector worldVector){
+        RealMatrix fullMatrix = projectionMatrix.multiply(viewMatrix);
+        Vector newbie = multMatrixVector(worldVector, fullMatrix);
+        return newbie.getW();
+    }
     public Vector transformToScreenVector(Vector worldVector) {
         RealMatrix fullMatrix = projectionMatrix.multiply(viewMatrix);
         Vector newbie = multMatrixVector(worldVector, fullMatrix);

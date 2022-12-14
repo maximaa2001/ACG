@@ -11,24 +11,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Parser {
-    private List<Vector> verts = new ArrayList<>();
-    private List<Vector> norms = new ArrayList<>();
-    private List<Texture> textures = new ArrayList<>();
-    private List<List<Vertex>> faces = new ArrayList<>();
+    private final List<Vector> verts = new ArrayList<>();
+    private final List<Vector> norms = new ArrayList<>();
+    private final List<Texture> textures = new ArrayList<>();
+    private final List<List<Vertex>> faces = new ArrayList<>();
 
     public Model readObject() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
-        String str = null;
+        String str;
         while ((str = br.readLine()) != null) {
             if (str.startsWith("vn ")) {
                 String[] parts = str.split(" +");
                 norms.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
             } else if (str.startsWith("vt ")) {
                 String[] parts = str.split(" +");
-                textures.add(new Texture(Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
+                textures.add(new Texture(Double.parseDouble(parts[1]),1 - Double.parseDouble(parts[2])));
             } else if (str.startsWith("v ")) {
                 String[] parts = str.split(" +");
                 verts.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
