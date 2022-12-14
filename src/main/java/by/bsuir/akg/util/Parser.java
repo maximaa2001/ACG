@@ -20,6 +20,7 @@ public class Parser {
 
     public Model readObject() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
+//        BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResource(Const.PATH_TO_OBJECT).toString()));
         String str;
         while ((str = br.readLine()) != null) {
             if (str.startsWith("vn ")) {
