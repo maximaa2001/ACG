@@ -2,27 +2,24 @@ package by.bsuir.akg.service;
 
 import by.bsuir.akg.entity.Vector;
 
+import static by.bsuir.akg.util.MathHelper.minus3;
+import static by.bsuir.akg.util.MathHelper.normilizeVector;
+
 public class PhongShader {
 
     private final static Vector light_position = new Vector(50.0, 80.0, 200.0);
-
     private final static Vector diffuse_albedo = new Vector(0.5, 0.2, 0.7);
     private final static Vector specular_albedo = new Vector(0.9, 0.9, 0.9);
     private final static Vector ambient = new Vector(0.05, 0.05, 0.05);
     private final static double specular_power = 128.0;
 
-    public static Vector getPhongColorWithTexture(Vector position, Vector normal, Vector diffuseColor, Vector mirror){
-        Vector N = normal.normalize3();
-        Vector L = (light_position.minus3(position)).normalize3();
-//        if(L.getX() < 0 || L.getZ() <0 || L.getY()<0)
-//            System.out.println(L.getX() + "   " + L.getY() + "    " + L.getZ());
-        Vector V = (new Vector(-position.getX(), -position.getY(), -position.getZ())).normalize3();
-        Vector R = (reflect(L, N)).normalize3();
-//        if(R.getX() < 0 || R.getZ() <0 || R.getY()<0)
-//            System.out.println(R.getX() + "   " + R.getY() + "    " + R.getZ());
+    public static Vector getPhongColorWithTexture(Vector position, Vector normal, Vector diffuseColor, Vector mirror) {
+        Vector N = normilizeVector(normal);
+        Vector L = normilizeVector(minus3(light_position, position));
+        Vector V = normilizeVector(new Vector(-position.getX(), -position.getY(), -position.getZ()));
+        Vector R = normilizeVector(reflect(L, N));
         double kd = Math.max(dot(N, L), 0.0);
-        if(kd < 0)
-            System.out.println("kjns");
+
         Vector diffuse = new Vector(
                 diffuseColor.getX() * kd,
                 diffuseColor.getY() * kd,
@@ -38,11 +35,12 @@ public class PhongShader {
                 Math.min(color.getY(), 1.0),
                 Math.min(color.getZ(), 1.0));
     }
+
     public static Vector getPhongColor(Vector position, Vector normal) {
-        Vector N = normal.normalize3();
-        Vector L = (light_position.minus3(position)).normalize3();
-        Vector V = (new Vector(-position.getX(), -position.getY(), -position.getZ())).normalize3();
-        Vector R = (reflect(L, N)).normalize3();
+        Vector N = normilizeVector(normal);
+        Vector L = normilizeVector(minus3(light_position, position));
+        Vector V = normilizeVector(new Vector(-position.getX(), -position.getY(), -position.getZ()));
+        Vector R = normilizeVector(reflect(L, N));
         double kd = Math.max(dot(N, L), 0.0);
         Vector diffuse = new Vector(
                 diffuse_albedo.getX() * kd,

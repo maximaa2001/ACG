@@ -10,7 +10,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Parser {
     private final List<Vector> verts = new ArrayList<>();
@@ -20,16 +22,17 @@ public class Parser {
 
     public Model readObject() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
-//        BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResource(Const.PATH_TO_OBJECT).toString()));
         String str;
         while ((str = br.readLine()) != null) {
-            if (str.startsWith("vn ")) {
+            if (str.startsWith("#")) {
+                continue;
+            } else if (str.startsWith("vn ")) { // normals
                 String[] parts = str.split(" +");
                 norms.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
-            } else if (str.startsWith("vt ")) {
+            } else if (str.startsWith("vt ")) { // textures
                 String[] parts = str.split(" +");
-                textures.add(new Texture(Double.parseDouble(parts[1]),1 - Double.parseDouble(parts[2])));
-            } else if (str.startsWith("v ")) {
+                textures.add(new Texture(Double.parseDouble(parts[1]), 1 - Double.parseDouble(parts[2])));
+            } else if (str.startsWith("v ")) { // start points
                 String[] parts = str.split(" +");
                 verts.add(new Vector(Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3])));
             } else if (str.startsWith("f ")) {
@@ -49,15 +52,14 @@ public class Parser {
                 faces.add(polygon);
             }
         }
-        List<List<Vertex>> triangles = new ArrayList<>();
-        faces.forEach(polygon -> {
-            List<List<Vertex>> triangles1 = getTriangles(polygon);
-            triangles.addAll(triangles1);
-        });
+        List<List<Vertex>> triangles = faces.stream()
+                .map(this::dividePolygonOnTriangles)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         return new Model(verts, norms, triangles);
     }
 
-    private List<List<Vertex>> getTriangles(List<Vertex> polygon) {
+    private List<List<Vertex>> dividePolygonOnTriangles(List<Vertex> polygon) {
         List<List<Vertex>> triangles = new ArrayList<>();
         if (polygon.size() == 3) {
             triangles.add(polygon);

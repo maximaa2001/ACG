@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TextureService {
@@ -25,43 +24,42 @@ public class TextureService {
     public List<Vector> getTextureVectors(double xt, double yt) {
         int x = (int) Math.round(width * xt);
         int y = (int) Math.round(height * yt);
-        if (x >= width )
+        if (x >= width) {
             x = width - 1;
-        if (y >= height)
+        } else if (x < 0) {
+            x = 0;
+        }
+        if (y >= height) {
             y = height - 1;
-        if(y < 1)
-            y = 1;
-        if(x < 1)
-            x = 1;
+        } else if (y < 0) {
+            y = 0;
+        }
 
-        Vector color = getTextureColor(x, y, bufferedImageColor);
-        Vector mirror = getTextureMirror(x, y, bufferedImageMirror);
-        Vector normal = getTextureNormal(x, y, bufferedImageNormal);
-        List<Vector> vectors = new ArrayList<>();
-        vectors.add(color);//diffuse ambient
-        vectors.add(normal);//
-        vectors.add(mirror);// specular albedo, power???
-        return vectors;
+        Vector color = getTextureColor(x, y);
+        Vector mirror = getTextureMirror(x, y);
+        Vector normal = getTextureNormal(x, y);
+
+        return List.of(color, normal, mirror);
     }
 
-    public Vector getTextureMirror(int x, int y, BufferedImage bufferedImage) {
-        int rgb = bufferedImage.getRGB(x, y);
+    public Vector getTextureColor(int x, int y) {
+        int rgb = bufferedImageColor.getRGB(x, y);
         int red = (rgb >> 16) & 0xFF;
         int green = (rgb >> 8) & 0xFF;
         int blue = rgb & 0xFF;
         return new Vector((double) red / 255, (double) green / 255, (double) blue / 255);
     }
 
-    public Vector getTextureColor(int x, int y, BufferedImage bufferedImage) {
-        int rgb = bufferedImage.getRGB(x, y);
+    public Vector getTextureMirror(int x, int y) {
+        int rgb = bufferedImageMirror.getRGB(x, y);
         int red = (rgb >> 16) & 0xFF;
         int green = (rgb >> 8) & 0xFF;
         int blue = rgb & 0xFF;
         return new Vector((double) red / 255, (double) green / 255, (double) blue / 255);
     }
 
-    public Vector getTextureNormal(int x, int y, BufferedImage bufferedImage) {
-        int rgb = bufferedImage.getRGB(x, y);
+    public Vector getTextureNormal(int x, int y) {
+        int rgb = bufferedImageNormal.getRGB(x, y);
         int red = (rgb >> 16) & 0xFF;
         int green = (rgb >> 8) & 0xFF;
         int blue = rgb & 0xFF;

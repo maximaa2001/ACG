@@ -4,25 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Model {
-    private List<Vector> verts;
-    private List<Vector> norms;
-    public List<List<Vertex>> faces;
+    private final List<Vector> verts;
+    private final List<Vector> norms;
+    private final List<List<Vertex>> faces;
 
     public Model(List<Vector> verts, List<Vector> norms, List<List<Vertex>> faces) {
         this.verts = verts;
         this.norms = norms;
-        this.faces = faces;
-    }
-
-    public void setVerts(List<Vector> verts) {
-        this.verts = verts;
-    }
-
-    public void setNorms(List<Vector> norms) {
-        this.norms = norms;
-    }
-
-    public void setFaces(List<List<Vertex>> faces) {
         this.faces = faces;
     }
 

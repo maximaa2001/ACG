@@ -10,116 +10,129 @@ import java.util.List;
 public class InterpolationService {
 
     public static List<Vector> interpolationNormalPositionLine(double px, Vertex vertex1, Vertex vertex2) {
-        double x1 = vertex1.position_screen.getX();
-        double x2 = vertex2.position_screen.getX();
+        double x1 = vertex1.getPositionScreen().getX();
+        double x2 = vertex2.getPositionScreen().getX();
         double w2 = (px - x1) / (x2 - x1);
         double w1 = 1 - w2;
-        Vector normal = getInterpolationVector2W(vertex1.normal, vertex2.normal, w1, w2);
-        Vector position = getInterpolationVector2W(vertex1.position, vertex2.position, w1, w2);
+        Vector normal = getInterpolationVector2W(vertex1.getNormal(), vertex2.getNormal(), w1, w2);
+        Vector position = getInterpolationVector2W(vertex1.getPosition(), vertex2.getPosition(), w1, w2);
         List<Vector> res = new ArrayList<>();
         res.add(normal);
         res.add(position);
         return res;
     }
 
-    public static double interpolationZ(double px, Vertex vertex1, Vertex vertex2) {
-        double x1 = vertex1.position_screen.getX();
-        double x2 = vertex2.position_screen.getX();
+    public static double interpolationZ(double px, Vertex startVertex, Vertex endVertex) {
+        double x1 = startVertex.getPositionScreen().getX();
+        double x2 = endVertex.getPositionScreen().getX();
 
-        double z1 = vertex1.position_screen.getZ();
-        double z2 = vertex2.position_screen.getZ();
+        double z1 = startVertex.getPositionScreen().getZ();
+        double z2 = endVertex.getPositionScreen().getZ();
+
         double w2 = (px - x1) / (x2 - x1);
         double w1 = 1 - w2;
         return w1 * z1 + w2 * z2;
     }
 
-    public static double interpolationZTriangle(double px, double py, List<Vertex> triangle) {
+    public static double interpolationZTriangle(double px, double py, List<Vertex> triangle, List<Double> ks) {
 
-        double z1 = triangle.get(0).position_screen.getZ();
-        double z2 = triangle.get(1).position_screen.getZ();
-        double z3 = triangle.get(2).position_screen.getZ();
+        double z1 = triangle.get(0).getPositionScreen().getZ();
+        double z2 = triangle.get(1).getPositionScreen().getZ();
+        double z3 = triangle.get(2).getPositionScreen().getZ();
 
-        List<Double> listW = getInterpolationKs(triangle.get(0), triangle.get(1), triangle.get(2), px, py);
-
-        double w1 = listW.get(0);
-        double w2 = listW.get(1);
-        double w3 = listW.get(2);
+        double w1 = ks.get(0);
+        double w2 = ks.get(1);
+        double w3 = ks.get(2);
 
         return w1 * z1 + w2 * z2 + w3 * z3;
     }
 
     public static List<Vector> interpolationNormalPosition(double px, double py, List<Vertex> triangle) {
-        List<Double> listW = getInterpolationKs(triangle.get(0), triangle.get(1), triangle.get(2), px, py);
+        List<Double> listW = getInterpolationKs(triangle, px, py);
 
         double w1 = listW.get(0);
         double w2 = listW.get(1);
         double w3 = listW.get(2);
 
         Vector normal = getInterpolationVector(
-                triangle.get(0).normal,
-                triangle.get(1).normal,
-                triangle.get(2).normal,
+                triangle.get(0).getNormal(),
+                triangle.get(1).getNormal(),
+                triangle.get(2).getNormal(),
                 w1, w2, w3);
         Vector position = getInterpolationVector(
-                triangle.get(0).position,
-                triangle.get(1).position,
-                triangle.get(2).position,
+                triangle.get(0).getPosition(),
+                triangle.get(1).getPosition(),
+                triangle.get(2).getPosition(),
                 w1, w2, w3);
         List<Vector> res = new ArrayList<>();
         res.add(normal);
         res.add(position);
         return res;
     }
-    public static List<Double> getInterpolationKs(Vertex vertex1, Vertex vertex2, Vertex vertex3, double px, double py){
-        double x1 = vertex1.position_screen.getX();
-        double x2 = vertex2.position_screen.getX();
-        double x3 = vertex3.position_screen.getX();
 
-        double y1 = vertex1.position_screen.getY();
-        double y2 = vertex2.position_screen.getY();
-        double y3 = vertex3.position_screen.getY();
+    public static List<Double> getInterpolationKs(List<Vertex> triangle, double px, double py) {
+        double x1 = triangle.get(0).getPositionScreen().getX();
+        double x2 = triangle.get(1).getPositionScreen().getX();
+        double x3 = triangle.get(2).getPositionScreen().getX();
+
+        double y1 = triangle.get(0).getPositionScreen().getY();
+        double y2 = triangle.get(1).getPositionScreen().getY();
+        double y3 = triangle.get(2).getPositionScreen().getY();
 
         double div = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
         double w1 = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / div;
         double w2 = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / div;
         double w3 = 1 - w1 - w2;
 
-        List<Double> ks = new ArrayList<>();
-        ks.add(w1);
-        ks.add(w2);
-        ks.add(w3);
-        return ks;
+        return List.of(w1, w2, w3);
     }
-    public static Texture interpolateTexture(Texture texture1, Texture texture2, Texture texture3, double w1, double w2, double w3, double k1, double k2, double k3){
-        double u1 = texture1.getX();
-        double u2 = texture2.getX();
-        double u3 = texture3.getX();
 
-        double v1 = texture1.getY();
-        double v2 = texture2.getY();
-        double v3 = texture3.getY();
+    public static Texture interpolateTexture(List<Vertex> triangle, List<Double> ks) {
+        double u1 = triangle.get(0).getTexture().getX();
+        double u2 = triangle.get(1).getTexture().getX();
+        double u3 = triangle.get(2).getTexture().getX();
 
-        double u = (k1*u1/w1+k2*u2/w2+k3*u3/w3)/(k1/w1+k2/w2+k3/w3);
-        double v = (k1*v1/w1+k2*v2/w2+k3*v3/w3)/(k1/w1+k2/w2+k3/w3);
+        double v1 = triangle.get(0).getTexture().getY();
+        double v2 = triangle.get(1).getTexture().getY();
+        double v3 = triangle.get(2).getTexture().getY();
+
+        Double w1 = triangle.get(0).getW();
+        Double w2 = triangle.get(1).getW();
+        Double w3 = triangle.get(2).getW();
+
+        double k1 = ks.get(0);
+        double k2 = ks.get(1);
+        double k3 = ks.get(2);
+
+        double u = (k1 * u1 / w1 + k2 * u2 / w2 + k3 * u3 / w3) / (k1 / w1 + k2 / w2 + k3 / w3);
+        double v = (k1 * v1 / w1 + k2 * v2 / w2 + k3 * v3 / w3) / (k1 / w1 + k2 / w2 + k3 / w3);
         return new Texture(u, v);
     }
 
-    public static Vector interpolateWorldVectorWithPerspective(Vertex vertex1, Vertex vertex2, Vertex vertex3, double w1, double w2, double w3, double k1, double k2, double k3){
-        double x1 = vertex1.position.getX();
-        double x2 = vertex2.position.getX();
-        double x3 = vertex3.position.getX();
+    public static Vector interpolateWorldVectorWithPerspective(List<Vertex> triangle, List<Double> ks) {
+        double x1 = triangle.get(0).getPosition().getX();
+        double x2 = triangle.get(1).getPosition().getX();
+        double x3 = triangle.get(2).getPosition().getX();
 
-        double y1 = vertex1.position.getY();
-        double y2 = vertex2.position.getY();
-        double y3 = vertex3.position.getY();
+        double y1 = triangle.get(0).getPosition().getY();
+        double y2 = triangle.get(1).getPosition().getY();
+        double y3 = triangle.get(2).getPosition().getY();
 
-        double z1 = vertex1.position.getZ();
-        double z2 = vertex2.position.getZ();
-        double z3 = vertex3.position.getZ();
+        double z1 = triangle.get(0).getPosition().getZ();
+        double z2 = triangle.get(1).getPosition().getZ();
+        double z3 = triangle.get(2).getPosition().getZ();
 
-        double x = (k1*x1/w1+k2*x2/w2+k3*x3/w3)/(k1/w1+k2/w2+k3/w3);
-        double y = (k1*y1/w1+k2*y2/w2+k3*y3/w3)/(k1/w1+k2/w2+k3/w3);
-        double z = (k1*z1/w1+k2*z2/w2+k3*z3/w3)/(k1/w1+k2/w2+k3/w3);
+        Double w1 = triangle.get(0).getW();
+        Double w2 = triangle.get(1).getW();
+        Double w3 = triangle.get(2).getW();
+
+        double k1 = ks.get(0);
+        double k2 = ks.get(1);
+        double k3 = ks.get(2);
+
+        double x = (k1 * x1 / w1 + k2 * x2 / w2 + k3 * x3 / w3) / (k1 / w1 + k2 / w2 + k3 / w3);
+        double y = (k1 * y1 / w1 + k2 * y2 / w2 + k3 * y3 / w3) / (k1 / w1 + k2 / w2 + k3 / w3);
+        double z = (k1 * z1 / w1 + k2 * z2 / w2 + k3 * z3 / w3) / (k1 / w1 + k2 / w2 + k3 / w3);
         return new Vector(x, y, z);
     }
 
