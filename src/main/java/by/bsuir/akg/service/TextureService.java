@@ -8,13 +8,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class TextureService {
     private final int height;
     private final int width;
-    private final BufferedImage bufferedImageColor = ImageIO.read(new File(Const.PATH_TO_COLOR));
-    private final BufferedImage bufferedImageNormal = ImageIO.read(new File(Const.PATH_TO_NORMAL));
-    private final BufferedImage bufferedImageMirror = ImageIO.read(new File(Const.PATH_TO_MIRROR));
+    private final BufferedImage bufferedImageColor = ImageIO.read(Objects.requireNonNull(getClass().getResource(Const.PATH_TO_COLOR)));
+    private final BufferedImage bufferedImageNormal = ImageIO.read(Objects.requireNonNull(getClass().getResource(Const.PATH_TO_NORMAL)));
+    private final BufferedImage bufferedImageMirror = ImageIO.read(Objects.requireNonNull(getClass().getResource(Const.PATH_TO_MIRROR)));
 
     public TextureService() throws IOException {
         height = bufferedImageColor.getHeight();

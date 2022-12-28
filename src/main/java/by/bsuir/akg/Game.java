@@ -1,12 +1,15 @@
 package by.bsuir.akg;
 
+import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Camera;
 import by.bsuir.akg.entity.Model;
 import by.bsuir.akg.handler.EventHandler;
 import by.bsuir.akg.util.Parser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Game {
     private static Game game;
@@ -30,8 +33,8 @@ public class Game {
 
     public void create() throws IOException {
         EventHandler.init(stage, camera);
-        Model model = parser.readObject();
-        modelService = new ModelService(model, camera);
+        List<? extends Model> models = parser.readObject();
+        modelService = new ModelService(models, camera);
         render();
     }
 
