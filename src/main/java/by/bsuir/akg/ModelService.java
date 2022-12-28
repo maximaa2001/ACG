@@ -5,6 +5,8 @@ import by.bsuir.akg.entity.Model;
 import by.bsuir.akg.entity.Vector;
 import by.bsuir.akg.entity.Vertex;
 import by.bsuir.akg.service.DrawService;
+import by.bsuir.akg.util.MathHelper;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class ModelService {
                     List<Vertex> screenTriangle = new ArrayList<>();
                     for (Vertex vertex : triangle) {
                         vertex.setW(camera.getWFromTransformationToScreenVector(vertex.getPosition()));
-                        vertex.setPositionScreen(camera.transformToScreenVector(vertex.getPosition()));
+                        vertex.setPositionScreen(camera.transformToScreenVector(getWorldVector(vertex, model)));
                         screenTriangle.add(vertex);
                     }
                     screenTriangles.add(screenTriangle);
@@ -41,6 +43,10 @@ public class ModelService {
             }
             drawObjects(screenTriangles);
         }
+    }
+
+    private Vector getWorldVector(Vertex vertex, Model model) {
+        return MathHelper.multMatrixVector(vertex.getPosition(), new Array2DRowRealMatrix(model.getTranslateMatrix()));
     }
 
     private void drawObjects(List<List<Vertex>> screenTriangles) {

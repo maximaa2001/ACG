@@ -1,13 +1,14 @@
 package by.bsuir.akg.entity;
 
 import by.bsuir.akg.constant.Const;
+import by.bsuir.akg.util.MathHelper;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
 
 public class Camera {
-    private Vector position = new Vector(20.0, 10.0, 50.0);
-    private Vector target = new Vector(-5.0, 3.0, 0.0);
+    private Vector position = new Vector(0.0, 25.0, 50.0);
+    private Vector target = new Vector(0.0, 0.0, 0.0);
     private Vector up = new Vector(0.0, 1.0, 0.0);
     private Double fow = Math.PI / 4f;
 
@@ -24,16 +25,17 @@ public class Camera {
         windowMatrix = createWindowMatrix();
     }
 
-    public Double getWFromTransformationToScreenVector(Vector worldVector){
+    public Double getWFromTransformationToScreenVector(Vector worldVector) {
         RealMatrix fullMatrix = projectionMatrix.multiply(viewMatrix);
-        Vector newbie = multMatrixVector(worldVector, fullMatrix);
+        Vector newbie = MathHelper.multMatrixVector(worldVector, fullMatrix);
         return newbie.getW();
     }
+
     public Vector transformToScreenVector(Vector worldVector) {
         RealMatrix fullMatrix = projectionMatrix.multiply(viewMatrix);
-        Vector newbie = multMatrixVector(worldVector, fullMatrix);
+        Vector newbie = MathHelper.multMatrixVector(worldVector, fullMatrix);
         RealMatrix divide = divide(newbie, newbie.getW());
-        return multMatrixVector(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]), windowMatrix);
+        return MathHelper.multMatrixVector(new Vector(divide.getData()[0][0], divide.getData()[1][0], divide.getData()[2][0]), windowMatrix);
 //        Vector vector = multMatrixVector(worldVector, viewMatrix);
 //        Vector vector1 = multMatrixVector(vector, projectionMatrix);
 //        RealMatrix divide = divide(vector, vector1.getW());
@@ -41,16 +43,6 @@ public class Camera {
 //        return multMatrixVector(vector2, windowMatrix);
     }
 
-    private Vector multMatrixVector(Vector vector, RealMatrix matrix) {
-        double[] res = new double[]{0, 0, 0, 0};
-        double[] asList = new double[]{vector.getX(), vector.getY(), vector.getZ(), vector.getW()};
-        for (int row = 0; row <= 3; row++) {
-            for (int column = 0; column <= 3; column++) {
-                res[row] += matrix.getData()[row][column] * asList[column];
-            }
-        }
-        return new Vector(res[0], res[1], res[2], res[3]);
-    }
 
     private RealMatrix createViewMatrix() {
         Vector ZAxis = normalize(minus(position, target));

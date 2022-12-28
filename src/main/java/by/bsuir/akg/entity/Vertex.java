@@ -5,9 +5,7 @@ public class Vertex {
     private Vector normal;
     private Texture texture;
     private Vector positionScreen;
-
     private Double w;
-
 
     public Vertex(Vector position,Texture texture, Vector normal){
         this.position = position;
@@ -21,6 +19,10 @@ public class Vertex {
 
     public void setW(Double w) {
         this.w = w;
+    }
+
+    public void setPosition(Vector position) {
+        this.position = position;
     }
 
     public void setPositionScreen(Vector positionScreen) {

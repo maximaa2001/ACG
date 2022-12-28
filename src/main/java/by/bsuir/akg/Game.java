@@ -32,8 +32,8 @@ public class Game {
     }
 
     public void create() throws IOException {
-        EventHandler.init(stage, camera);
         List<? extends Model> models = parser.readObject();
+        EventHandler.init(stage, camera, models);
         modelService = new ModelService(models, camera);
         render();
     }

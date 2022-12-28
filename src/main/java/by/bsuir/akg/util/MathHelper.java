@@ -2,6 +2,7 @@ package by.bsuir.akg.util;
 
 import by.bsuir.akg.entity.Vector;
 import by.bsuir.akg.entity.Vertex;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.List;
 
@@ -45,5 +46,16 @@ public class MathHelper {
 
     public static float scalarMultiple(Vector vector1, Vector vector2) {
         return (float) (vector1.getX() * vector2.getX() + vector1.getY() * vector2.getY() + vector1.getZ() * vector2.getZ());
+    }
+
+    public static Vector multMatrixVector(Vector vector, RealMatrix matrix) {
+        double[] res = new double[]{0, 0, 0, 0};
+        double[] asList = new double[]{vector.getX(), vector.getY(), vector.getZ(), vector.getW()};
+        for (int row = 0; row <= 3; row++) {
+            for (int column = 0; column <= 3; column++) {
+                res[row] += matrix.getData()[row][column] * asList[column];
+            }
+        }
+        return new Vector(res[0], res[1], res[2], res[3]);
     }
 }

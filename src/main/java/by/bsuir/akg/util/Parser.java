@@ -19,7 +19,6 @@ public class Parser {
     private final List<Vector> verts = new ArrayList<>();
     private final List<Vector> norms = new ArrayList<>();
     private final List<Texture> textures = new ArrayList<>();
-    private final List<List<Vertex>> faces = new ArrayList<>();
 
    // private final List<Integer> redNumbers = List.of(1, 4, 7, 10, 13, 16, 19, 22, 31, 34, 43, 46);
 
@@ -64,7 +63,6 @@ public class Parser {
                     break;
                 }
             }
-
         }
         return new Board(getTriangles(faces));
     }
