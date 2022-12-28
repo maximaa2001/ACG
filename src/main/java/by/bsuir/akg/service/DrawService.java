@@ -100,7 +100,7 @@ public class DrawService {
         renderController.getBufferedImage().getGraphics().clearRect(0, 0, Const.WIDTH, Const.HEIGHT);
         for (int i = 0; i < Const.HEIGHT; i++) {
             for (int j = 0; j < Const.WIDTH; j++) {
-                zBuffer[i][j] = 100000.0;
+                zBuffer[i][j] = Double.MAX_VALUE;
             }
         }
     }

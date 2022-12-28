@@ -22,9 +22,9 @@ public class ModelService {
 
     public void render() {
         camera.updateScreenMatrix();
+        List<List<Vertex>> screenTriangles = new ArrayList<>();
         for(Model model : models) {
             List<List<Vertex>> triangles = model.getFaces();
-            List<List<Vertex>> screenTriangles = new ArrayList<>();
             for (List<Vertex> triangle : triangles) {
                 Vector normal = normilizeVector(findNormalForTriangle(triangle));
                 Vector position = normilizeVector(minus3(camera.getPosition(), triangle.get(0).getPosition()));
@@ -39,13 +39,16 @@ public class ModelService {
                     screenTriangles.add(screenTriangle);
                 }
             }
-            DrawService drawService = DrawService.getInstance(null);
-            drawService.clear();
-            for (List<Vertex> newTriangle : screenTriangles) {
-                drawService.drawTriangle(newTriangle);
-            }
-            drawService.repaint();
+            drawObjects(screenTriangles);
         }
+    }
 
+    private void drawObjects(List<List<Vertex>> screenTriangles) {
+        DrawService drawService = DrawService.getInstance(null);
+        drawService.clear();
+        for (List<Vertex> newTriangle : screenTriangles) {
+            drawService.drawTriangle(newTriangle);
+        }
+        drawService.repaint();
     }
 }

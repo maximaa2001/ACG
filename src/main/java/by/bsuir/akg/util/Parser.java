@@ -21,7 +21,9 @@ public class Parser {
     private final List<Texture> textures = new ArrayList<>();
     private final List<List<Vertex>> faces = new ArrayList<>();
 
-    private final List<Integer> redNumbers = List.of(1, 4, 7, 10, 13, 16, 19, 22, 31, 34, 43, 46);
+   // private final List<Integer> redNumbers = List.of(1, 4, 7, 10, 13, 16, 19, 22, 31, 34, 43, 46);
+
+    private final List<Integer> redNumbers = List.of(1, 4, 7, 10, 13, 16, 19, 22, 34, 40, 43, 46);
 
     public List<? extends Model> readObject() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
@@ -43,7 +45,10 @@ public class Parser {
         }
         Board board = readBoard();
         Map<ColorDefine, List<Checker>> colorDefineListMap = readCheckers();
-        return List.of(colorDefineListMap.get(ColorDefine.RED).get(0), colorDefineListMap.get(ColorDefine.RED).get(1), board);
+        List<Model> allGameObjects = new ArrayList<>(colorDefineListMap.get(ColorDefine.RED));
+        allGameObjects.addAll(colorDefineListMap.get(ColorDefine.BLACK));
+        allGameObjects.add(board);
+        return allGameObjects;
     }
 
     private Board readBoard() throws IOException {
