@@ -1,22 +1,30 @@
 package by.bsuir.akg;
 
-import by.bsuir.akg.constant.Const;
+import by.bsuir.akg.constant.GameObjectDefine;
 import by.bsuir.akg.entity.Camera;
+import by.bsuir.akg.entity.Gamer;
 import by.bsuir.akg.entity.Model;
-import by.bsuir.akg.handler.EventHandler;
+import by.bsuir.akg.entity.domain.Checker;
+import by.bsuir.akg.service.game.GameService;
 import by.bsuir.akg.util.Parser;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Game {
     private static Game game;
-    private Parser parser = new Parser();
-    private Camera camera = new Camera();
+    private final Parser parser = new Parser();
+    private final Camera camera = new Camera();
+
+    private Map<GameObjectDefine, List<? extends Model>> models;
 
     private ModelService modelService;
+
+    private GameService gameService;
 
     private Stage stage;
 
@@ -25,16 +33,16 @@ public class Game {
     }
 
     public static Game getGame(Stage stage) {
-        if(game == null) {
+        if (game == null) {
             game = new Game(stage);
         }
         return game;
     }
 
     public void create() throws IOException {
-        List<? extends Model> models = parser.readObject();
-        EventHandler.init(stage, camera, models);
-        modelService = new ModelService(models, camera);
+        models = parser.readObject();
+        gameService = new GameService(models, stage);
+        modelService = new ModelService(models.values().stream().flatMap(Collection::stream).collect(Collectors.toList()), camera);
         render();
     }
 

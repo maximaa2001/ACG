@@ -1,12 +1,11 @@
 package by.bsuir.akg.entity;
 
-import by.bsuir.akg.util.TextureInitializer;
-
-import java.awt.image.BufferedImage;
+import java.awt.*;
 import java.util.List;
 
 public abstract class Model {
     private final List<List<Vertex>> triangles;
+    private Color customColor;
 
     private final double[][] translateMatrix = new double[][]{
             {1, 0, 0, 0},
@@ -14,9 +13,6 @@ public abstract class Model {
             {0, 0, 1, 0},
             {0, 0, 0, 1}
     };
-    private final BufferedImage colorTexture = TextureInitializer.getInstance().getColorTexture();
-    private final BufferedImage normalTexture = TextureInitializer.getInstance().getNormalTexture();
-    private final BufferedImage mirrorTexture = TextureInitializer.getInstance().getMirrorTexture();
 
     public Model(List<List<Vertex>> triangles) {
         this.triangles = triangles;
@@ -34,5 +30,13 @@ public abstract class Model {
 
     public List<List<Vertex>> getFaces() {
         return triangles;
+    }
+
+    public void setCustomColor(Color customColor) {
+        this.customColor = customColor;
+    }
+
+    public Color getCustomColor() {
+        return customColor;
     }
 }

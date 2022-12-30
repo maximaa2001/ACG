@@ -1,6 +1,6 @@
 package by.bsuir.akg.util;
 
-import by.bsuir.akg.constant.ColorDefine;
+import by.bsuir.akg.constant.GameObjectDefine;
 import by.bsuir.akg.constant.Const;
 import by.bsuir.akg.entity.Model;
 import by.bsuir.akg.entity.Texture;
@@ -20,11 +20,11 @@ public class Parser {
     private final List<Vector> norms = new ArrayList<>();
     private final List<Texture> textures = new ArrayList<>();
 
-   // private final List<Integer> redNumbers = List.of(1, 4, 7, 10, 13, 16, 19, 22, 31, 34, 43, 46);
-
     private final List<Integer> redNumbers = List.of(1, 4, 7, 10, 13, 16, 19, 22, 34, 40, 43, 46);
 
-    public List<? extends Model> readObject() throws IOException {
+    private final List<Integer> blackNumbers = List.of(25, 28, 31, 37, 49, 52, 55, 58, 61, 64, 67, 70);
+
+    public Map<GameObjectDefine, List<? extends Model>> readObject() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
         String str;
         while ((str = br.readLine()) != null) {
@@ -43,11 +43,9 @@ public class Parser {
 
         }
         Board board = readBoard();
-        Map<ColorDefine, List<Checker>> colorDefineListMap = readCheckers();
-        List<Model> allGameObjects = new ArrayList<>(colorDefineListMap.get(ColorDefine.RED));
-        allGameObjects.addAll(colorDefineListMap.get(ColorDefine.BLACK));
-        allGameObjects.add(board);
-        return allGameObjects;
+        Map<GameObjectDefine, List<? extends  Model>> gameObjectsMap = readCheckers();
+        gameObjectsMap.put(GameObjectDefine.BOARD, List.of(board));
+        return gameObjectsMap;
     }
 
     private Board readBoard() throws IOException {
@@ -55,7 +53,7 @@ public class Parser {
         String str;
         List<List<Vertex>> faces = new ArrayList<>();
         while ((str = br.readLine()) != null) {
-            if(str.contains("g pCube1")) {
+            if (str.contains("g pCube1")) {
                 if ((str = br.readLine()).contains("usemtl initialShadingGroup")) {
                     while ((str = br.readLine()).startsWith("f ")) {
                         faces.add(splitF(str));
@@ -67,31 +65,31 @@ public class Parser {
         return new Board(getTriangles(faces));
     }
 
-    private Map<ColorDefine, List<Checker>> readCheckers() throws IOException {
+    private Map<GameObjectDefine, List<? extends  Model>> readCheckers() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(Const.PATH_TO_OBJECT));
         String str;
         List<Checker> redCheckers = new ArrayList<>();
         List<Checker> blackCheckers = new ArrayList<>();
         List<List<Vertex>> checkerFaces = new ArrayList<>();
         while ((str = br.readLine()) != null) {
-            if(str.contains("g polySurface17")) {
+            if (str.contains("g polySurface17")) {
                 if ((str = br.readLine()).contains("usemtl initialShadingGroup")) {
                     while ((str = br.readLine()).startsWith("f ")) {
                         checkerFaces.add(splitF(str));
                     }
-                    redCheckers.add(new Checker(getTriangles(checkerFaces)));
+                    redCheckers.add(new Checker(getTriangles(checkerFaces), 6, 0, GameObjectDefine.RED_CHECKER));
                     while (str != null) {
                         List<List<Vertex>> temp = new ArrayList<>();
                         if (str.startsWith("s ")) {
                             String[] split = str.split(" +");
-                            int number = Integer.parseInt(split[split.length - 1]);
+                            int number = Integer.parseInt(split[1]);
                             while ((str = br.readLine()) != null && str.startsWith("f ")) {
                                 temp.add(splitF(str));
                             }
                             if (redNumbers.contains(number)) {
-                                redCheckers.add(new Checker(getTriangles(temp)));
+                                redCheckers.add(new Checker(getTriangles(temp), Integer.parseInt(split[2]), Integer.parseInt(split[3]), GameObjectDefine.RED_CHECKER));
                             } else {
-                                blackCheckers.add(new Checker(getTriangles(temp)));
+                                blackCheckers.add(new Checker(getTriangles(temp), Integer.parseInt(split[2]), Integer.parseInt(split[3]), GameObjectDefine.BLACK_CHECKER));
                             }
                         }
                     }
@@ -99,10 +97,10 @@ public class Parser {
             }
 
         }
-        Map<ColorDefine, List<Checker>> checkers = new HashMap<>();
+        Map<GameObjectDefine, List<? extends  Model>> checkers = new HashMap<>();
         {
-            checkers.put(ColorDefine.RED, redCheckers);
-            checkers.put(ColorDefine.BLACK, blackCheckers);
+            checkers.put(GameObjectDefine.RED_CHECKER, redCheckers);
+            checkers.put(GameObjectDefine.BLACK_CHECKER, blackCheckers);
         }
         return checkers;
     }

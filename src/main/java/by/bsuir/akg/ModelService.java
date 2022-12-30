@@ -25,7 +25,7 @@ public class ModelService {
     public void render() {
         camera.updateScreenMatrix();
         List<List<Vertex>> screenTriangles = new ArrayList<>();
-        for(Model model : models) {
+        for (Model model : models) {
             List<List<Vertex>> triangles = model.getFaces();
             for (List<Vertex> triangle : triangles) {
                 Vector normal = normilizeVector(findNormalForTriangle(triangle));
@@ -36,13 +36,18 @@ public class ModelService {
                     for (Vertex vertex : triangle) {
                         vertex.setW(camera.getWFromTransformationToScreenVector(vertex.getPosition()));
                         vertex.setPositionScreen(camera.transformToScreenVector(getWorldVector(vertex, model)));
+                        if (model.getCustomColor() != null) {
+                            vertex.setCustomColor(model.getCustomColor());
+                        } else {
+                            vertex.setCustomColor(null);
+                        }
                         screenTriangle.add(vertex);
                     }
                     screenTriangles.add(screenTriangle);
                 }
             }
-            drawObjects(screenTriangles);
         }
+        drawObjects(screenTriangles);
     }
 
     private Vector getWorldVector(Vertex vertex, Model model) {
@@ -53,7 +58,7 @@ public class ModelService {
         DrawService drawService = DrawService.getInstance(null);
         drawService.clear();
         for (List<Vertex> newTriangle : screenTriangles) {
-            drawService.drawTriangle(newTriangle);
+            drawService.drawTriangle(newTriangle, newTriangle.get(0).getCustomColor() != null ? newTriangle.get(0).getCustomColor() : null);
         }
         drawService.repaint();
     }
