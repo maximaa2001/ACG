@@ -26,7 +26,7 @@ public class Board extends Model {
 
     public void initBlackCheckers(List<Checker> blackCheckers) {
         for (Checker checker : blackCheckers) {
-            insertInvertedValues(7 - checker.getPositionX(), 7 -checker.getPositionY(), checker);
+            insertInvertedValues(7 - checker.getPositionX(), 7 - checker.getPositionY(), checker);
         }
     }
 
@@ -34,8 +34,12 @@ public class Board extends Model {
         board[7 - boardY][boardX] = checker;
     }
 
-    public Checker getElement(Integer boardX, Integer boardY) {
-        return  board[7 - boardY][boardX];
+    public Checker getRedElement(Integer positionX, Integer positionY) {
+        return board[7 - positionY][positionX];
+    }
+
+    public Checker getBlackElement(Integer positionX, Integer positionY) {
+        return board[positionY][7 - positionX];
     }
 
     public Checker[][] getBoard() {

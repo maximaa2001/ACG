@@ -26,7 +26,7 @@ public class Game {
 
     private GameService gameService;
 
-    private Stage stage;
+    private final Stage stage;
 
     private Game(Stage stage) {
         this.stage = stage;
@@ -41,10 +41,15 @@ public class Game {
 
     public void create() throws IOException {
         models = parser.readObject();
-        gameService = new GameService(models, stage);
+        gameService = new GameService(models, stage, camera);
         modelService = new ModelService(models.values().stream().flatMap(Collection::stream).collect(Collectors.toList()), camera);
         render();
     }
+
+    public void remove(Model model) {
+        modelService.remove(model);
+    }
+
 
     public void render() {
         modelService.render();

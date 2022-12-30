@@ -14,7 +14,7 @@ import java.util.List;
 import static by.bsuir.akg.util.MathHelper.*;
 
 public class ModelService {
-    private final List<? extends Model> models;
+    private List<? extends Model> models;
     private final Camera camera;
 
     public ModelService(List<? extends Model> models, Camera camera) {
@@ -61,5 +61,9 @@ public class ModelService {
             drawService.drawTriangle(newTriangle, newTriangle.get(0).getCustomColor() != null ? newTriangle.get(0).getCustomColor() : null);
         }
         drawService.repaint();
+    }
+
+    public void remove(Model model) {
+        models.remove(model);
     }
 }
